@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane maxHeight="600.0" maxWidth="400.0" minHeight="436.0" minWidth="400.0" prefHeight="600.0" prefWidth="402.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.SignUpController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="76.0" minWidth="10.0" prefWidth="68.0" />
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="424.0" minWidth="10.0" prefWidth="272.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="189.0" minWidth="10.0" prefWidth="58.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="267.0" minHeight="10.0" prefHeight="32.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="543.0" minHeight="10.0" prefHeight="543.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="120.0" minHeight="0.0" prefHeight="25.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <VBox alignment="CENTER_LEFT" prefHeight="200.0" prefWidth="100.0" spacing="15.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <children>
+                <HBox alignment="CENTER" layoutX="30.0" layoutY="328.0">
+                    <children>
+                        <Label text="Sign Up" textFill="#2374ab">
+                            <font>
+                                <Font size="50.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+            <Label fx:id="lblSignUpError" textFill="RED" wrapText="true" />
+            <TextField fx:id="firstname" layoutX="30.0" layoutY="216.0" promptText="First name" />
+            <TextField fx:id="lastname" layoutX="30.0" layoutY="394.0" promptText="Last name" />
+                <TextField fx:id="username" promptText="Username" />
+            <PasswordField fx:id="password" layoutX="30.0" layoutY="276.0" promptText="Password" />
+                <PasswordField fx:id="passwordConfirm" promptText="Re enter password" />
+            <Label fx:id="lblPasswordError" minHeight="0.0" prefHeight="0.0" textFill="RED" visible="false" />
+                <HBox alignment="CENTER" spacing="15.0">
+                    <children>
+                        <Button fx:id="btnSignUp" mnemonicParsing="false" onAction="#SignUp" text="Sign Up" />
+                        <Button fx:id="btnClose" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#close" text="Close" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" layoutX="10.0" layoutY="94.0">
+                    <children>
+                        <Hyperlink fx:id="linkSingUp" alignment="CENTER" contentDisplay="CENTER" onAction="#goToSignUp" text="Already a member? Login here" textAlignment="CENTER" underline="true" />
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+        </VBox>
+    </children>
+</GridPane>
