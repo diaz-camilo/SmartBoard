@@ -20,6 +20,7 @@ public class WorkSpace {
     private User user;
 
     public WorkSpace() {
+        this.quotes = loadQuotes();
     }
 
     public WorkSpace(User user) {
