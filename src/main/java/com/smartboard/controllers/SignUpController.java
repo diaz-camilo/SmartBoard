@@ -87,8 +87,8 @@ public class SignUpController {
         // Generate a SignUp scene
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 
