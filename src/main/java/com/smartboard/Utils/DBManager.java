@@ -6,9 +6,9 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 public class DBManager {
 
@@ -53,7 +53,7 @@ public class DBManager {
         return false;
     }
 
-    public static boolean RegisterUser(String username, String password, String firstname, String lastname) throws UserException {
+    public static User RegisterUser(String username, String password, String firstname, String lastname) throws UserException {
         String errorMessage = "";
         if (Utils.NullOrEmpty(firstname))
             errorMessage += "> First Name can not be empty\n";
@@ -85,14 +85,179 @@ public class DBManager {
             userStatement.execute();
             loginStatement.execute();
 
-            return true;
+            User user = new User();
+            user.setUsermane(username);
+            user.setLastName(lastname);
+            user.setFirstName(firstname);
+            addWorkspace(username);
+
+
+            return user;
 
         } catch (SQLException e) {
             if (e.getMessage().toLowerCase().contains("unique constraint failed: users.username"))
                 throw new UserException("> Username already taken, please try a different Username");
         }
-        return false;
+        throw new UserException("> Something went wrong, please ty again");
+
     }
+
+    /**
+     * Adds a new workspace to the database with a default project
+     *
+     * @param username the owner of the workspace
+     * @return the now workspace object
+     */
+    public static Workspace addWorkspace(String username) {
+        Workspace workSpace = new Workspace();
+        workSpace.setUsername(username);
+        Project defaultProject;
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "INSERT INTO workspaces (username) values (?); ");
+            preparedStatement.setString(1, username);
+            preparedStatement.execute();
+
+            ResultSet resultSet = conn.prepareStatement(
+                    "SELECT id FROM workspaces ORDER BY rowid DESC LIMIT 1;").executeQuery();
+            resultSet.next();
+            workSpace.setId(resultSet.getInt(1));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        defaultProject = addProject(workSpace.getId(), "My Project");
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("update workspaces set default_project = " +
+                    defaultProject.getId() + " where id = " + workSpace.getId()).execute();
+
+            workSpace.setDefaultProject(defaultProject);
+            return workSpace;
+
+        } catch (
+                SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Adds a new project to the database with the default values
+     *
+     * @param workspaceId the parent workspace id for the project
+     * @param name        the name of the project
+     * @return the project object
+     */
+    public static Project addProject(int workspaceId, String name) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            Project defaultProject = new Project();
+            defaultProject.setName(name);
+
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "INSERT INTO projects (name, workspace_id) values (?,?) ");
+            preparedStatement.setString(1, defaultProject.getName());
+            preparedStatement.setInt(2, workspaceId);
+            preparedStatement.execute();
+
+            ResultSet resultSet = conn.prepareStatement(
+                    "SELECT id FROM projects ORDER BY rowid DESC LIMIT 1").executeQuery();
+            resultSet.next();
+
+            defaultProject.setId(resultSet.getInt(1));
+            conn.close();
+            defaultProject.setColumns(addDefaultColumns(defaultProject.getId()));
+
+            return defaultProject;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Generates a list of columns with names To do, Doing, Complete
+     *
+     * @param projectId
+     * @return
+     */
+    public static List<Column> addDefaultColumns(int projectId) {
+        List<Column> defaultColumns = Arrays.asList(
+                addColumn(projectId, "To Do"),
+                addColumn(projectId, "Doing"),
+                addColumn(projectId, "Complete")
+        );
+        return defaultColumns;
+    }
+
+    /**
+     * Adds a column to the database and returns an object with its values
+     *
+     * @param projectId the parent project id
+     * @param name      the column name
+     * @return a Column object or null
+     */
+    public static Column addColumn(int projectId, String name) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            Column column = new Column();
+            column.setName(name);
+            column.setTasks(new ArrayList<>());
+
+            Project defaultProject = new Project();
+            defaultProject.setName(name);
+
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "INSERT INTO columns (name, project_id) values (?,?); ");
+            preparedStatement.setString(1, column.getName());
+            preparedStatement.setInt(2, projectId);
+            preparedStatement.execute();
+
+            ResultSet resultSet = conn.prepareStatement(
+                    "SELECT id FROM columns ORDER BY rowid DESC LIMIT 1;").executeQuery();
+            resultSet.next();
+            column.setId(resultSet.getInt(1));
+
+            return column;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * adds a task to the database, retrieves an id from the database and sets it on the task object
+     *
+     * @param task the task to add to the database
+     * @return the same task with the task id set
+     */
+    public static Task addTask(Task task) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "insert into tasks (name, description, duedate, state, column_id) values (?,?,?,?,?);");
+            preparedStatement.setString(1, task.getName());
+            preparedStatement.setString(2, task.getDescription());
+            preparedStatement.setDate(3, new Date(task.getDueDate().getTimeInMillis()));
+            preparedStatement.setString(4, task.getState().name());
+            preparedStatement.setInt(5, task.getColumn().getId());
+            preparedStatement.execute();
+
+            ResultSet resultSet = conn.prepareStatement(
+                    "SELECT id FROM tasks ORDER BY rowid DESC LIMIT 1;").executeQuery();
+            resultSet.next();
+            task.setId(resultSet.getInt(1));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return task;
+    }
+
 
     /**
      * Gets default project id from database, if none found returns -1
@@ -113,7 +278,7 @@ public class DBManager {
         return -1;
     }
 
-    public static List<Project> getUserProjects(WorkSpace workSpace) {
+    public static List<Project> getUserProjects(Workspace workSpace) {
         List<Project> projects = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url)) {
             PreparedStatement preparedStatement = conn.prepareStatement(
@@ -203,22 +368,6 @@ public class DBManager {
 
     }
 
-    public static void addTask(Task task) {
-        List<Task> tasks = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url)) {
-            PreparedStatement preparedStatement = conn.prepareStatement(
-                    "insert into tasks (name, description, duedate, state, column_id) values (?,?,?,?,?);");
-            preparedStatement.setString(1, task.getName());
-            preparedStatement.setString(2, task.getDescription());
-            preparedStatement.setDate(3, new Date(task.getDueDate().getTimeInMillis()));
-            preparedStatement.setString(4, task.getState().name());
-            preparedStatement.setInt(5, task.getColumn().getId());
-            System.out.println(preparedStatement.execute());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     public static Task getTaskById(int i) {
         Task task = null;
@@ -264,8 +413,8 @@ public class DBManager {
         return user;
     }
 
-    public static WorkSpace loadWorkspace(User user) {
-        WorkSpace workSpace = null;
+    public static Workspace loadWorkspace(User user) {
+        Workspace workSpace = null;
         int defaultProject;
         try (Connection conn = DriverManager.getConnection(url)) {
             PreparedStatement preparedStatement = conn.prepareStatement(
@@ -273,7 +422,8 @@ public class DBManager {
             preparedStatement.setString(1, user.getUsermane());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                workSpace = new WorkSpace();
+                workSpace = new Workspace();
+                workSpace.setUser(user);
                 workSpace.setId(resultSet.getInt("id"));
                 workSpace.setUsername(resultSet.getString("username"));
                 workSpace.setProjects(loadProjects(workSpace));
@@ -292,7 +442,7 @@ public class DBManager {
 
     }
 
-    public static List<Project> loadProjects(WorkSpace workSpace) {
+    public static List<Project> loadProjects(Workspace workSpace) {
         List<Project> projects = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url)) {
             PreparedStatement preparedStatement = conn.prepareStatement(
@@ -331,6 +481,7 @@ public class DBManager {
                 columns.add(column);
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         return columns;
@@ -383,5 +534,46 @@ public class DBManager {
             e.printStackTrace();
         }
         return items;
+    }
+
+    public static boolean deleteWorkspace(Workspace workspace) {
+        return deleteRow(workspace);
+    }
+
+    public static boolean deleteProject(Project project) {
+        return deleteRow(project);
+    }
+
+    public static boolean deleteColumn(Column column) {
+        return deleteRow(column);
+    }
+
+    public static boolean deleteTask(Task task) {
+        return deleteRow(task);
+    }
+
+    public static boolean deleteUser(User user) {
+        return deleteRow(user);
+    }
+
+    private static <T> boolean deleteRow(T model) {
+        // Check if operation can be performed
+        if (!(model instanceof Identifiable))
+            return false;
+
+        // get class name and add 's' to match DB table names
+        String tableName = model.getClass().getSimpleName() + "s";
+
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "delete from " + tableName + " where id = ?");
+            preparedStatement.setInt(1, ((Identifiable) model).getId());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

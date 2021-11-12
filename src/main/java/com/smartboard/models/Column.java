@@ -1,14 +1,17 @@
 package com.smartboard.models;
 
+import com.smartboard.controllers.ColumnController;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class Column {
+public class Column implements Identifiable {
 
     private int id;
     private String name;
     private List<Task> tasks;
     private Project project;
+    private ColumnController controller;
 
     public Column() {
         this.tasks = new ArrayList<>();
@@ -57,6 +60,11 @@ public class Column {
         this.project = project;
     }
 
+    public void setController(ColumnController controller) {
+        this.controller = controller;
+    }
+
+
     /**
      * Adds a Task object to the List
      *
@@ -77,5 +85,9 @@ public class Column {
     public List<Task> removeTask(Task task) {
         this.tasks.remove(task);
         return this.tasks;
+    }
+
+    public ColumnController getController() {
+        return this.controller;
     }
 }

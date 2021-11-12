@@ -5,12 +5,13 @@ import com.smartboard.Utils.DBManager;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class WorkSpace {
+public class Workspace implements Identifiable {
 
     private int id;
     private List<String> quotes;
@@ -19,11 +20,12 @@ public class WorkSpace {
     private String username;
     private User user;
 
-    public WorkSpace() {
+    public Workspace() {
         this.quotes = loadQuotes();
     }
 
-    public WorkSpace(User user) {
+
+    public Workspace(User user) {
         this.username = user.getUsermane();
         this.quotes = loadQuotes();
         this.id = DBManager.getWorkSpaceId(user.getUsermane());
@@ -33,6 +35,14 @@ public class WorkSpace {
                 .collect(Collectors.toList());
         this.defaultProject = tempProjects.size() == 0 ? null : tempProjects.get(0);
         populateProjectColumns(this.defaultProject);
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public int getId() {

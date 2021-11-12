@@ -3,18 +3,19 @@ package com.smartboard.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Project {
+public class Project implements Identifiable {
 
     private int id;
     private String name;
     private List<Column> columns;
-    private WorkSpace workSpace;
+    private Workspace workSpace;
 
     public Project() {
         this.columns = new ArrayList<>();
     }
 
-    public Project(int id, String name, WorkSpace workSpace) {
+
+    public Project(int id, String name, Workspace workSpace) {
         this();
         this.id = id;
         this.name = name;
@@ -45,11 +46,11 @@ public class Project {
         this.columns = columns;
     }
 
-    public WorkSpace getWorkSpace() {
+    public Workspace getWorkSpace() {
         return workSpace;
     }
 
-    public void setWorkSpace(WorkSpace workSpace) {
+    public void setWorkSpace(Workspace workSpace) {
         this.workSpace = workSpace;
     }
 

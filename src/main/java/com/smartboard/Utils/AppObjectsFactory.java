@@ -5,13 +5,13 @@ import com.smartboard.models.*;
 public class AppObjectsFactory {
 
 
-    public static WorkSpace getWorkspace(User user) {
-        WorkSpace workSpace = new WorkSpace();
+    public static Workspace getWorkspace(User user) {
+        Workspace workSpace = new Workspace();
 
         return workSpace;
     }
 
-    public static Project getProject(WorkSpace workSpace) {
+    public static Project getProject(Workspace workSpace) {
         Project project = new Project();
         return project;
     }

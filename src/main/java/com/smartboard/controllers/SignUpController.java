@@ -58,15 +58,17 @@ public class SignUpController {
             lblPasswordError.setVisible(true);
         } else {
             try {
-                DBManager.RegisterUser(username.getText(), password.getText(), firstname.getText(), lastname.getText());
-                // TODO Generate workspace with template project
+                DBManager.RegisterUser(username.getText(),
+                        password.getText(), firstname.getText(), lastname.getText());
                 MainApplicationController.activeUser = DBManager.getUser(username.getText());
+                // TODO Generate workspace with template project
                 // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 // Generate a SignUp scene
                 FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("mainApplication.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());
                 stage.setScene(scene);
+                stage.setMaximized(true);
                 stage.show();
             } catch (UserException e) {
                 lblSignUpError.setText(e.getMessage());
@@ -88,7 +90,6 @@ public class SignUpController {
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("login.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
-        stage.setMaximized(true);
         stage.show();
     }
 

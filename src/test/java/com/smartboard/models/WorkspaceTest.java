@@ -8,13 +8,13 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class WorkSpaceTest {
+class WorkspaceTest {
 
-    private WorkSpace ws;
+    private Workspace ws;
 
     @BeforeEach
     void setUp() {
-        ws = new WorkSpace();
+        ws = new Workspace();
     }
 
     // Test might fail if the two randomly selected quotes are the same, which should not happen very often.

@@ -1,6 +1,6 @@
 package com.smartboard.models;
 
-public class ListItem {
+public class ListItem implements Identifiable {
 
     private int id;
     private String description;

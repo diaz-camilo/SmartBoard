@@ -3,16 +3,17 @@ package com.smartboard.controllers;
 import com.smartboard.models.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 
 public class TaskController {
@@ -30,6 +31,24 @@ public class TaskController {
     private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("dd MMM h:mm aa");
 
+    private Task model;
+    private VBox view;
+
+    public Task getModel() {
+        return model;
+    }
+
+    public void setModel(Task model) {
+        this.model = model;
+    }
+
+    public Node getView() {
+        return view;
+    }
+
+    public void setView(VBox view) {
+        this.view = view;
+    }
 
     @FXML
     public void editTask(ActionEvent event) {
@@ -37,17 +56,22 @@ public class TaskController {
 
     @FXML
     public void DeleteTask(ActionEvent event) {
+        model.getColumn().getController().removeTask(this);
     }
 
-    public void init(Task task) {
+
+    public void init(Task model, VBox view) {
+        this.model = model;
+        this.view = view;
 
         try {
             imgClock.setImage(new Image(new FileInputStream("src/static/resources/img/task_clock.png")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        txtName.setText(task.getName());
-        String duesDate = dateFormat.format(task.getDueDate().getTime());
+        this.model.setController(this);
+        txtName.setText(model.getName());
+        String duesDate = dateFormat.format(model.getDueDate().getTime());
         lblDueDate.setText(duesDate);
     }
 }

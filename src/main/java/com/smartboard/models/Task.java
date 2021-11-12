@@ -1,10 +1,12 @@
 package com.smartboard.models;
 
+import com.smartboard.controllers.TaskController;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class Task {
+public class Task implements Identifiable {
     private int id;
     private String name;
     private String description;
@@ -12,6 +14,7 @@ public class Task {
     private List<ListItem> listItems;
     private TaskState state;
     private Column column;
+    private TaskController taskController;
 
     public Task() {
         this.listItems = new ArrayList<>();
@@ -102,5 +105,9 @@ public class Task {
     public List<ListItem> removeListItem(ListItem listItem) {
         this.listItems.remove(listItem);
         return this.listItems;
+    }
+
+    public void setController(TaskController taskController) {
+        this.taskController = taskController;
     }
 }

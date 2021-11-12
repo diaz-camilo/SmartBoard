@@ -10,9 +10,10 @@ public class User {
     private String lastName;
     private String profilePicturePath = "default_profile_pic.png";
     private Login login;
-    private WorkSpace workSpace;
+    private Workspace workSpace;
 
     public User() {
+        workSpace = new Workspace();
     }
 
     public User(String firstName, String lastName, String username, String password) throws UserException {
@@ -62,11 +63,11 @@ public class User {
         this.login = login;
     }
 
-    public WorkSpace getWorkSpace() {
+    public Workspace getWorkSpace() {
         return workSpace;
     }
 
-    public void setWorkSpace(WorkSpace workSpace) {
+    public void setWorkSpace(Workspace workSpace) {
         this.workSpace = workSpace;
     }
 
