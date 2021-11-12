@@ -106,7 +106,7 @@ public class MainApplicationController {
                 FXMLLoader columnLoader = new FXMLLoader(Application.class.getResource("column.fxml"));
                 VBox vBoxColumn = columnLoader.load();
                 ColumnController columnController = columnLoader.getController();
-                columnController.init(column);
+                columnController.init(column, vBoxColumn);
                 for (var task : column.getTasks()) {
                     FXMLLoader taskLoader = new FXMLLoader(Application.class.getResource("task.fxml"));
                     VBox vBoxTask = taskLoader.load();

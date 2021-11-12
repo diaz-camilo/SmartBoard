@@ -1,5 +1,7 @@
 package com.smartboard.models;
 
+import com.smartboard.controllers.ProjectController;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,8 @@ public class Project implements Identifiable {
     private String name;
     private List<Column> columns;
     private Workspace workSpace;
+    private ProjectController controller;
+
 
     public Project() {
         this.columns = new ArrayList<>();
@@ -20,6 +24,14 @@ public class Project implements Identifiable {
         this.id = id;
         this.name = name;
         this.workSpace = workSpace;
+    }
+
+    public void setController(ProjectController controller) {
+        this.controller = controller;
+    }
+
+    public ProjectController getController() {
+        return controller;
     }
 
     public int getId() {
@@ -75,4 +87,6 @@ public class Project implements Identifiable {
         this.columns.remove(column);
         return this.columns;
     }
+
+
 }

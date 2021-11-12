@@ -8,32 +8,33 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox style="-fx-border-color: #aaa; -fx-border-radius: 5;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.TaskController">
+<VBox style="-fx-border-color: #aaa; -fx-border-radius: 5;" xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.TaskController">
     <children>
         <HBox alignment="CENTER_RIGHT" spacing="5.0">
             <children>
-                <Hyperlink fx:id="linkEdit" onAction="#editTask" text="Edit" />
-                <Hyperlink fx:id="linkDelete" layoutX="10.0" layoutY="10.0" onAction="#DeleteTask" text="Delete" />
+                <Hyperlink fx:id="linkEdit" onAction="#editTask" text="Edit"/>
+                <Hyperlink fx:id="linkDelete" layoutX="10.0" layoutY="10.0" onAction="#deleteTask" text="Delete"/>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </HBox>
         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="5.0">
             <children>
-                <Text fx:id="txtName" strokeType="OUTSIDE" strokeWidth="0.0" text="Paint the kitchen" />
+                <Text fx:id="txtName" strokeType="OUTSIDE" strokeWidth="0.0" text="Paint the kitchen"/>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </HBox>
         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="110.0" spacing="5.0">
             <children>
-                <ImageView fx:id="imgClock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
-                <Label fx:id="lblDueDate" text="Label" />
+                <ImageView fx:id="imgClock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                <Label fx:id="lblDueDate" text="Label"/>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </HBox>
     </children>

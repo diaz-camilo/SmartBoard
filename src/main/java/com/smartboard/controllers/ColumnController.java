@@ -8,6 +8,7 @@ import com.smartboard.models.TaskState;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
@@ -20,6 +21,8 @@ import java.util.Calendar;
 public class ColumnController {
     @FXML
     public VBox taskCardsContainer;
+
+    @FXML
     public MenuItem deleteColumn;
 
     @FXML
@@ -31,15 +34,37 @@ public class ColumnController {
     @FXML
     private SplitMenuButton splitBtnAddTask;
 
-    private Column column;
+    private Column model;
+    private Node view;
 
+    public Column getModel() {
+        return model;
+    }
+
+    public void setModel(Column model) {
+        this.model = model;
+    }
+
+    public Node getView() {
+        return view;
+    }
+
+    public void setView(Node view) {
+        this.view = view;
+    }
+
+    /**
+     * Add a new task to the column
+     *
+     * @param event add task button event
+     */
     @FXML
-    void addChildren(ActionEvent event) throws IOException {
+    public void addChildren(ActionEvent event) throws IOException {
 
         // set up task object
         Task task = new Task();
         task.setName("testing task");
-        task.setColumn(this.column);
+        task.setColumn(this.model);
         task.setListItems(new ArrayList<>());
         task.setDueDate(Calendar.getInstance());
         task.setState(TaskState.ACTIVE);
@@ -49,7 +74,7 @@ public class ColumnController {
         DBManager.addTask(task);
 
         // add task to column obj
-        column.addTask(task);
+        model.addTask(task);
 
         // generate task node and controller
         FXMLLoader taskLoader = new FXMLLoader(Application.class.getResource("task.fxml"));
@@ -61,14 +86,16 @@ public class ColumnController {
         addChildren(vBoxTask);
     }
 
-    public void addChildren(VBox vBoxTask) {
-        taskCardsContainer.getChildren().add(vBoxTask);
+    public void addChildren(Node taskNode) {
+        taskCardsContainer.getChildren().add(taskNode);
     }
 
-    public void init(Column column) {
-        this.column = column;
-        this.column.setController(this);
-        lblColumnName.setText(column.getName());
+    public void init(Column model, Node view) {
+        this.model = model;
+        this.view = view;
+        this.model.setController(this);
+
+        lblColumnName.setText(model.getName());
     }
 
     public void removeTask(TaskController taskController) {
@@ -80,5 +107,6 @@ public class ColumnController {
     }
 
     public void deleteColumn(ActionEvent event) {
+        model.getProject().getController().removeColumn(this);
     }
 }

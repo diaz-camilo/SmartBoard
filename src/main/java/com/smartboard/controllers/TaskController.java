@@ -32,7 +32,7 @@ public class TaskController {
             new SimpleDateFormat("dd MMM h:mm aa");
 
     private Task model;
-    private VBox view;
+    private Node view;
 
     public Task getModel() {
         return model;
@@ -46,7 +46,7 @@ public class TaskController {
         return view;
     }
 
-    public void setView(VBox view) {
+    public void setView(Node view) {
         this.view = view;
     }
 
@@ -55,21 +55,21 @@ public class TaskController {
     }
 
     @FXML
-    public void DeleteTask(ActionEvent event) {
+    public void deleteTask(ActionEvent event) {
         model.getColumn().getController().removeTask(this);
     }
 
 
-    public void init(Task model, VBox view) {
+    public void init(Task model, Node view) {
         this.model = model;
         this.view = view;
+        this.model.setController(this);
 
         try {
             imgClock.setImage(new Image(new FileInputStream("src/static/resources/img/task_clock.png")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        this.model.setController(this);
         txtName.setText(model.getName());
         String duesDate = dateFormat.format(model.getDueDate().getTime());
         lblDueDate.setText(duesDate);
