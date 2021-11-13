@@ -1,6 +1,7 @@
 package com.smartboard.models;
 
 import com.smartboard.Utils.DBManager;
+import com.smartboard.controllers.MainApplicationController;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -19,6 +20,8 @@ public class Workspace implements Identifiable {
     private Project defaultProject;
     private String username;
     private User user;
+    private MainApplicationController controller;
+
 
     public Workspace() {
         this.quotes = loadQuotes();
@@ -35,6 +38,14 @@ public class Workspace implements Identifiable {
                 .collect(Collectors.toList());
         this.defaultProject = tempProjects.size() == 0 ? null : tempProjects.get(0);
         populateProjectColumns(this.defaultProject);
+    }
+
+    public MainApplicationController getController() {
+        return controller;
+    }
+
+    public void setController(MainApplicationController controller) {
+        this.controller = controller;
     }
 
     public User getUser() {

@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -66,7 +67,10 @@ public class SignUpController {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 // Generate a SignUp scene
                 FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("mainApplication.fxml"));
-                Scene scene = new Scene(fxmlLoader.load());
+                Node view = fxmlLoader.load();
+                MainApplicationController controller = fxmlLoader.getController();
+                controller.setView(view);
+                Scene scene = new Scene((Parent) view);
                 stage.setScene(scene);
                 stage.setMaximized(true);
                 stage.show();

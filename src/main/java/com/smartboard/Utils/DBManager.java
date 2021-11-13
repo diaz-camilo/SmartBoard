@@ -207,9 +207,6 @@ public class DBManager {
             column.setName(name);
             column.setTasks(new ArrayList<>());
 
-            Project defaultProject = new Project();
-            defaultProject.setName(name);
-
             PreparedStatement preparedStatement = conn.prepareStatement(
                     "INSERT INTO columns (name, project_id) values (?,?); ");
             preparedStatement.setString(1, column.getName());
@@ -566,6 +563,9 @@ public class DBManager {
 
 
         try (Connection conn = DriverManager.getConnection(url)) {
+
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+
             PreparedStatement preparedStatement = conn.prepareStatement(
                     "delete from " + tableName + " where id = ?");
             preparedStatement.setInt(1, ((Identifiable) model).getId());

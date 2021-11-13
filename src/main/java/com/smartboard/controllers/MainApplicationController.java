@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 public class MainApplicationController {
 
-    private Workspace workSpace;
     public static User activeUser;
 
     @FXML
@@ -43,6 +42,13 @@ public class MainApplicationController {
     @FXML
     private Text txtQuote;
 
+    private Workspace model;
+    private Node view;
+
+    public void setView(Node view) {
+        this.view = view;
+    }
+
     @FXML
     void changeProfilePic(MouseEvent event) {
         System.out.println("mouse event");
@@ -61,7 +67,7 @@ public class MainApplicationController {
      */
     @FXML
     void logOut(ActionEvent event) throws IOException {
-        workSpace = null;
+        model = null;
         activeUser = null;
 
         // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
@@ -82,10 +88,12 @@ public class MainApplicationController {
     @FXML
     public void initialize() throws IOException {
 
-        workSpace = DBManager.loadWorkspace(activeUser);
-        activeUser.setWorkSpace(workSpace);
-        txtQuote.setText(String.format("%s - %s", workSpace.getRandomQuote()));
-        lblUsername.setText(workSpace.getUsername());
+        model = DBManager.loadWorkspace(activeUser);
+        model.setController(this);
+        activeUser.setWorkSpace(model);
+
+        txtQuote.setText(String.format("%s - %s", model.getRandomQuote()));
+        lblUsername.setText(model.getUsername());
         try {
             InputStream inputStream = new FileInputStream(
                     activeUser.getProfilePicturePath() != null ?
@@ -97,7 +105,7 @@ public class MainApplicationController {
             e.printStackTrace();
         }
 
-        for (var project : workSpace.getProjects()) {
+        for (var project : model.getProjects()) {
             FXMLLoader tabLoader = new FXMLLoader(Application.class.getResource("project.fxml"));
             Tab tab = tabLoader.load();
             ProjectController projectController = tabLoader.getController();
@@ -143,5 +151,17 @@ public class MainApplicationController {
 
     public void addTask(ActionEvent event) {
 
+    }
+
+    public void removeProject(ProjectController projectController) {
+        System.out.println("MAController::removePriject");
+
+        // remove project from DB
+        DBManager.deleteProject(projectController.getModel());
+
+        // remove project from model
+        boolean result = this.tabsProjects.getTabs().remove(this.tabsProjects.getSelectionModel().getSelectedItem());
+
+        System.out.println(result);
     }
 }
