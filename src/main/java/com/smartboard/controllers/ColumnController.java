@@ -115,15 +115,22 @@ public class ColumnController {
     }
 
     public void handleOnDragDropped(DragEvent event) {
+
         //retrieve task controller
         TaskController taskController = (TaskController) Utils.getDraggingObj();
-        taskController.getModel().setColumn(this.model);
 
-        //update DB
-        DBManager.updateTask(taskController.getModel());
+        if (this.taskCardsContainer.getChildren().contains(taskController.getView())) {
+            // todo reorder tasks
+        } else {
 
-        // update UI
-        this.taskCardsContainer.getChildren().add(taskController.getView());
+            taskController.getModel().setColumn(this.model);
+
+            //update DB
+            DBManager.updateTask(taskController.getModel());
+
+            // update UI
+            this.taskCardsContainer.getChildren().add(taskController.getView());
+        }
         event.consume();
     }
 
@@ -132,5 +139,23 @@ public class ColumnController {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         event.consume();
+    }
+
+    public void editColumnName(ActionEvent event) {
+        String dialogPrompt = "Enter new column name";
+        String errorPrompt = "Column name can not be empty.\nPlease enter a name for the column";
+        String defaultVal = model.getName();
+        String columnName = Utils.getStringFromDialog(dialogPrompt, errorPrompt, defaultVal);
+        if (columnName == null)
+            return;
+
+        // update model
+        model.setName(columnName);
+
+        // update DB
+        DBManager.updateColumn(model);
+
+        // update UI
+        this.lblColumnName.setText(columnName);
     }
 }

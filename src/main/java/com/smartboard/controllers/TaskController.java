@@ -140,11 +140,7 @@ public class TaskController {
         EditTaskController controller = loader.getController();
         controller.init(this);
 
-
         editStage.showAndWait();
-
-
-        // update DB
     }
 
     public void saveChanges(String newName, String newDescription, String newDate) throws ParseException {

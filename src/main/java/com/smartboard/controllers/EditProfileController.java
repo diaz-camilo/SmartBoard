@@ -3,14 +3,13 @@ package com.smartboard.controllers;
 import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
 import com.smartboard.exceptions.UserException;
+import com.smartboard.models.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -21,19 +20,10 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
-public class SignUpController {
+public class EditProfileController {
 
     public ImageView profilePic;
-    @FXML
-    private Button btnClose;
-
-    @FXML
-    private Button btnSignUp;
 
     @FXML
     private TextField firstname;
@@ -48,9 +38,6 @@ public class SignUpController {
     private Label lblSignUpError;
 
     @FXML
-    private Hyperlink linkSingUp;
-
-    @FXML
     private PasswordField password;
 
     @FXML
@@ -59,6 +46,7 @@ public class SignUpController {
     @FXML
     private TextField username;
     private String profilePicPath = null;
+    private MainApplicationController mainAppController;
 
     public void initialize() {
         try {
@@ -70,7 +58,7 @@ public class SignUpController {
 
 
     @FXML
-    void SignUp(ActionEvent event) throws IOException {
+    void saveChanges(ActionEvent event) throws IOException {
         if (!password.getText().equals(passwordConfirm.getText())) {
             lblPasswordError.setText("Password does not match");
             lblPasswordError.setPrefHeight(Label.USE_COMPUTED_SIZE);
@@ -78,24 +66,23 @@ public class SignUpController {
             lblPasswordError.setVisible(true);
         } else {
             try {
-                DBManager.RegisterUser(username.getText(),
+                // update DB
+                DBManager.updateUser(username.getText(),
                         password.getText(), firstname.getText(), lastname.getText(), profilePicPath);
-                MainApplicationController.activeUser = DBManager.getUser(username.getText());
-                // TODO Generate workspace with template project
-                // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                // Generate a SignUp scene
-                FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("mainApplication.fxml"));
-                Node view = fxmlLoader.load();
-                MainApplicationController controller = fxmlLoader.getController();
-                controller.setView(view);
-                Scene scene = new Scene((Parent) view);
-                stage.setScene(scene);
-                stage.setMaximized(true);
-                stage.show();
+
+                // update model
+                User user = MainApplicationController.activeUser;
+                user.setFirstName(firstname.getText());
+                user.setLastName(lastname.getText());
+                user.setProfilePicturePath(profilePicPath);
+
+                // update main app ui
+                this.mainAppController.username.setText(username.getText());
+                this.mainAppController.imgProfilePic.setImage(this.profilePic.getImage());
             } catch (UserException e) {
                 lblSignUpError.setText(e.getMessage());
             }
+            close(event);
         }
     }
 
@@ -105,16 +92,6 @@ public class SignUpController {
         ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
     }
 
-    @FXML
-    void goToLogin(ActionEvent event) throws IOException {
-        // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        // Generate a SignUp scene
-        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setScene(scene);
-        stage.show();
-    }
 
     public void handleOnImageClick(MouseEvent mouseEvent) {
 
@@ -130,6 +107,26 @@ public class SignUpController {
                 profilePicPath = selectedFile.getAbsolutePath();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void init(MainApplicationController mainApplicationController) {
+
+        this.mainAppController = mainApplicationController;
+        User user = MainApplicationController.activeUser;
+        // load and set user data into view
+        this.username.setText(user.getUsermane());
+        this.firstname.setText(user.getFirstName());
+        this.lastname.setText(user.getLastName());
+        String profilePicPath = user.getProfilePicturePath();
+
+        if (profilePicPath != null) {
+            try {
+                this.profilePic.setImage(new Image(new FileInputStream(profilePicPath)));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                System.out.println("unable to load profile pic EditProfileController::init");
             }
         }
     }

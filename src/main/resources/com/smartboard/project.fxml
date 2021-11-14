@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <Tab fx:id="projectTab" text="" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
@@ -23,6 +22,8 @@
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                     </HBox.margin>
                 </Button>
+                <Button layoutX="10.0" layoutY="10.0" onAction="#editProjectName" prefHeight="50.0" prefWidth="100.0"
+                        text="Change Name"/>
                 <Button onAction="#deleteProject" prefHeight="50.0" prefWidth="100.0" style="-fx-border-color: #f00;"
                         text="Delete Project">
                     <HBox.margin>

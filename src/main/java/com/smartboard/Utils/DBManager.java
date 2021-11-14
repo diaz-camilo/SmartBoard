@@ -53,7 +53,7 @@ public class DBManager {
         return false;
     }
 
-    public static User RegisterUser(String username, String password, String firstname, String lastname) throws UserException {
+    public static User RegisterUser(String username, String password, String firstname, String lastname, String profilePicPath) throws UserException {
         String errorMessage = "";
         if (Utils.NullOrEmpty(firstname))
             errorMessage += "> First Name can not be empty\n";
@@ -71,11 +71,13 @@ public class DBManager {
 
         try (Connection conn = DriverManager.getConnection(url)) {
 
-            PreparedStatement userStatement = conn.prepareStatement(
-                    "insert into users (username, firstname, lastname) values (?,?,?);");
+            PreparedStatement userStatement;
+            userStatement = conn.prepareStatement(
+                    "insert into users (username, firstname, lastname, profile_picture_path) values (?,?,?,?);");
             userStatement.setString(1, username);
             userStatement.setString(2, firstname);
             userStatement.setString(3, lastname);
+            userStatement.setString(4, profilePicPath);
 
             PreparedStatement loginStatement = conn.prepareStatement(
                     "insert into logins (username, password_hash) VALUES (?,?)");
@@ -622,7 +624,6 @@ public class DBManager {
             conn.prepareStatement("pragma foreign_keys = on;").execute();
             PreparedStatement preparedStatement = conn.prepareStatement(
                     "update tasks set name = ?, description = ?, duedate = ?, state = ?, column_id = ? where id = ? "
-//                    "insert into tasks (name, description, duedate, state, column_id) values (?,?,?,?,?);"
             );
             preparedStatement.setString(1, task.getName());
             preparedStatement.setString(2, task.getDescription());
@@ -637,5 +638,79 @@ public class DBManager {
         }
 
         return true;
+    }
+
+    public static boolean updateColumn(Column column) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "update columns set name = ? where id = ? "
+            );
+            preparedStatement.setString(1, column.getName());
+            preparedStatement.setInt(2, column.getId());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean updateProject(Project project) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "update projects set name = ? where id = ? "
+            );
+            preparedStatement.setString(1, project.getName());
+            preparedStatement.setInt(2, project.getId());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
+    public static boolean updateUser(String username, String password, String firstname, String lastname, String profilePicPath) throws UserException {
+        String errorMessage = "";
+        if (Utils.NullOrEmpty(firstname))
+            errorMessage += "> First Name can not be empty\n";
+        if (Utils.NullOrEmpty(lastname))
+            errorMessage += "> Last Name can not be empty\n";
+        if (Utils.NullOrEmpty(password))
+            errorMessage += "> Password can not be empty\n";
+
+        if (!errorMessage.isBlank())
+            throw new UserException(errorMessage.substring(0, errorMessage.length() - 1));
+
+        String pwdHash = BCrypt.hashpw(password, BCrypt.gensalt());
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+
+            PreparedStatement userStatement = conn.prepareStatement(
+                    "update users set firstname = ?, lastname = ?, profile_picture_path = ? where username = ?;");
+            userStatement.setString(1, firstname);
+            userStatement.setString(2, lastname);
+            userStatement.setString(3, profilePicPath);
+            userStatement.setString(4, username);
+
+            PreparedStatement loginStatement = conn.prepareStatement(
+                    "update logins set password_hash = ? where username = ?;");
+            loginStatement.setString(2, pwdHash);
+            loginStatement.setString(1, username);
+
+            userStatement.execute();
+            loginStatement.execute();
+
+            return true;
+
+        } catch (SQLException e) {
+            if (e.getMessage().toLowerCase().contains("unique constraint failed: users.username"))
+                throw new UserException("> Username already taken, please try a different Username");
+        }
+        throw new UserException("> Something went wrong, please ty again");
     }
 }

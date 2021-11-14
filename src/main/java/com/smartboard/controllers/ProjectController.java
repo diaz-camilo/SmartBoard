@@ -86,6 +86,27 @@ public class ProjectController {
         this.columnsContainer.getChildren().add(vBoxColumn);
     }
 
+    public void editProjectName(ActionEvent event) {
+
+
+        String dialogPrompt = "Enter new project name";
+        String errorPrompt = "Project name can not be empty.\nPlease enter a name for the project";
+        String defaultVal = model.getName();
+        String projectName = Utils.getStringFromDialog(dialogPrompt, errorPrompt, defaultVal);
+        if (projectName == null)
+            return;
+
+        // update model
+        model.setName(projectName);
+
+        // update DB
+        DBManager.updateProject(model);
+
+        // update UI
+        this.projectTab.setText(projectName);
+
+    }
+
     public void deleteProject(ActionEvent event) {
         model.getWorkSpace().getController().removeProject(this);
     }
