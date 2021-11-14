@@ -4,6 +4,7 @@ import com.smartboard.controllers.TaskController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class Task implements Identifiable {
@@ -109,5 +110,13 @@ public class Task implements Identifiable {
 
     public void setController(TaskController taskController) {
         this.taskController = taskController;
+    }
+
+    public void update(String newName, String newDescription, Calendar newDate) {
+        // todo validate
+
+        name = newName;
+        description = newDescription;
+        dueDate = newDate;
     }
 }

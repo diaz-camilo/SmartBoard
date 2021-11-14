@@ -69,6 +69,7 @@ public class ColumnController {
         task.setDueDate(Calendar.getInstance());
         task.setState(TaskState.ACTIVE);
         task.setDescription("some description");
+        this.model.getTasks().add(task);
 
         // add task to the DB
         DBManager.addTask(task);

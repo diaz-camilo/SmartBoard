@@ -1,38 +1,86 @@
 package com.smartboard.controllers;
 
+import com.smartboard.Application;
+import com.smartboard.Utils.DBManager;
 import com.smartboard.models.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class TaskController {
     @FXML
-    public Text txtName;
+    public Text name;
     @FXML
     public ImageView imgClock;
     @FXML
-    public Label lblDueDate;
+    public Label dueDate;
+
+
     @FXML
     public Hyperlink linkDelete;
     @FXML
     public Hyperlink linkEdit;
 
     private final SimpleDateFormat dateFormat =
-            new SimpleDateFormat("dd MMM h:mm aa");
+            new SimpleDateFormat("d MMM yy");
+    public TextArea description;
 
     private Task model;
     private Node view;
+
+    public Text getName() {
+        return name;
+    }
+
+    public void setName(Text name) {
+        this.name = name;
+    }
+
+    public void setNameText(String name) {
+        this.name.setText(name);
+    }
+
+    public Label getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Label dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public void setDueDateText(String dateText) {
+        this.dueDate.setText(dateText);
+    }
+
+    public TextArea getDescription() {
+        return description;
+    }
+
+    public void setDescription(TextArea description) {
+        this.description = description;
+    }
+
+    public void setDescriptionText(String description) {
+        this.description.setText(description);
+    }
 
     public Task getModel() {
         return model;
@@ -50,15 +98,11 @@ public class TaskController {
         this.view = view;
     }
 
-    @FXML
-    public void editTask(ActionEvent event) {
-    }
 
     @FXML
     public void deleteTask(ActionEvent event) {
         model.getColumn().getController().removeTask(this);
     }
-
 
     public void init(Task model, Node view) {
         this.model = model;
@@ -70,8 +114,48 @@ public class TaskController {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        txtName.setText(model.getName());
+        name.setText(model.getName());
         String duesDate = dateFormat.format(model.getDueDate().getTime());
-        lblDueDate.setText(duesDate);
+        dueDate.setText(duesDate);
+        description.setText(model.getDescription());
+    }
+
+
+    @FXML
+    public void editTask(ActionEvent event) throws IOException {
+        // generate edit task stage
+        FXMLLoader loader = new FXMLLoader(Application.class.getResource("editTask.fxml"));
+        Stage editStage = new Stage();
+        editStage.initModality(Modality.APPLICATION_MODAL);
+        editStage.setTitle("Edit Task");
+        editStage.setScene(new Scene(loader.load()));
+
+        EditTaskController controller = loader.getController();
+        controller.init(this);
+
+
+        editStage.showAndWait();
+
+
+        // update DB
+    }
+
+    public void saveChanges(String newName, String newDescription, String newDate) throws ParseException {
+
+        // update model
+        Calendar newCalendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM. yy", Locale.ENGLISH);
+        newCalendar.setTime(sdf.parse(newDate));
+        model.update(newName, newDescription, newCalendar);
+        // todo if model is valid, continue. else display error
+
+        // update view
+
+        setNameText(newName);
+        setDescriptionText(newDescription);
+        setDueDateText(newDate);
+
+        // update DB
+        DBManager.updateTask(model);
     }
 }

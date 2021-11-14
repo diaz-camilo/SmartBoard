@@ -5,32 +5,35 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<Tab fx:id="projectTab" text="" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.ProjectController">
+<Tab fx:id="projectTab" text="" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+     fx:controller="com.smartboard.controllers.ProjectController">
 
 
     <ScrollPane prefHeight="200.0" prefWidth="200.0">
         <HBox>
             <VBox spacing="20.0">
                 <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="20.0" />
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="20.0"/>
                 </padding>
                 <Button onAction="#addColumn" prefHeight="50.0" prefWidth="100.0" text="Add Column">
                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                     </HBox.margin>
                 </Button>
-                <Button onAction="#deleteProject" prefHeight="50.0" prefWidth="100.0" style="-fx-border-color: #f00;" text="Delete Project">
+                <Button onAction="#deleteProject" prefHeight="50.0" prefWidth="100.0" style="-fx-border-color: #f00;"
+                        text="Delete Project">
                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
                     </HBox.margin>
                 </Button>
             </VBox>
             <HBox fx:id="columnsContainer" spacing="10.0">
 
                 <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                 </padding>
             </HBox>
 

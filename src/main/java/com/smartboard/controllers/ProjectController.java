@@ -2,6 +2,7 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
+import com.smartboard.Utils.Utils;
 import com.smartboard.models.Column;
 import com.smartboard.models.Project;
 import javafx.event.ActionEvent;
@@ -9,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -22,11 +24,12 @@ public class ProjectController {
     public Tab projectTab;
 
     public Project model;
-    public Node view;
+    public Tab view;
 
 
-    public void init(Project project) {
+    public void init(Project project, Tab view) {
         this.model = project;
+        this.view = view;
         this.model.setController(this);
         this.projectTab.setText(this.model.getName());
     }
@@ -39,11 +42,11 @@ public class ProjectController {
         this.model = model;
     }
 
-    public Node getView() {
+    public Tab getView() {
         return view;
     }
 
-    public void setView(Node view) {
+    public void setView(Tab view) {
         this.view = view;
     }
 
@@ -60,9 +63,18 @@ public class ProjectController {
     }
 
     public void addColumn(ActionEvent event) throws IOException {
+
+        String dialogPrompt = "Enter new column name";
+        String errorPrompt = "Column name can not be empty.\nPlease enter a name for the new column";
+        String defaultVal = "New Column";
+        String columnName = Utils.getStringFromDialog(dialogPrompt, errorPrompt, defaultVal);
+        if (columnName == null)
+            return;
+
         // create column obj
-        Column column = DBManager.addColumn(this.model.getId(), "new Column");
+        Column column = DBManager.addColumn(this.model.getId(), columnName);
         column.setProject(this.model);
+        this.model.getColumns().add(column);
 
         // generate new column
         FXMLLoader columnLoader = new FXMLLoader(Application.class.getResource("column.fxml"));

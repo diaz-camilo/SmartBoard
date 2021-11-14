@@ -2,9 +2,12 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
+import com.smartboard.Utils.Utils;
+import com.smartboard.models.Project;
 import com.smartboard.models.User;
 import com.smartboard.models.Workspace;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -31,6 +34,7 @@ public class MainApplicationController {
     public Tab tabDefault;
     @FXML
     public Tab tabSecondProject;
+    public MenuItem newProject;
     @FXML
     private Button btnLogOut;
     @FXML
@@ -109,7 +113,7 @@ public class MainApplicationController {
             FXMLLoader tabLoader = new FXMLLoader(Application.class.getResource("project.fxml"));
             Tab tab = tabLoader.load();
             ProjectController projectController = tabLoader.getController();
-            projectController.init(project);
+            projectController.init(project, tab);
             for (var column : project.getColumns()) {
                 FXMLLoader columnLoader = new FXMLLoader(Application.class.getResource("column.fxml"));
                 VBox vBoxColumn = columnLoader.load();
@@ -163,5 +167,29 @@ public class MainApplicationController {
         boolean result = this.tabsProjects.getTabs().remove(this.tabsProjects.getSelectionModel().getSelectedItem());
 
         System.out.println(result);
+    }
+
+    public void addNewProject(ActionEvent event) throws IOException {
+
+        String dialogPrompt = "Enter new project name";
+        String errorPrompt = "Project name can not be empty.\nPlease enter a name for the new project";
+        String defaultVal = "New Project";
+        String projectName = Utils.getStringFromDialog(dialogPrompt, errorPrompt, defaultVal);
+        if (projectName == null)
+            return;
+
+        // create model
+        Project project = DBManager.addProject(this.model.getId(), projectName);
+        project.setWorkSpace(this.model);
+        this.model.getProjects().add(project);
+
+        // load view and controller
+        FXMLLoader tabLoader = new FXMLLoader(Application.class.getResource("project.fxml"));
+        Tab tab = tabLoader.load();
+        ProjectController projectController = tabLoader.getController();
+        projectController.init(project, tab);
+
+        //add project to UI
+        this.tabsProjects.getTabs().add(tab);
     }
 }

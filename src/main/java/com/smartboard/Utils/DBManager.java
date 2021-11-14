@@ -127,7 +127,7 @@ public class DBManager {
             e.printStackTrace();
         }
 
-        defaultProject = addProject(workSpace.getId(), "My Project");
+        defaultProject = addDefaultProject(workSpace.getId(), "My Project");
 
         try (Connection conn = DriverManager.getConnection(url)) {
             conn.prepareStatement("update workspaces set default_project = " +
@@ -150,7 +150,7 @@ public class DBManager {
      * @param name        the name of the project
      * @return the project object
      */
-    public static Project addProject(int workspaceId, String name) {
+    public static Project addDefaultProject(int workspaceId, String name) {
         try (Connection conn = DriverManager.getConnection(url)) {
 
             Project defaultProject = new Project();
@@ -171,6 +171,40 @@ public class DBManager {
             defaultProject.setColumns(addDefaultColumns(defaultProject.getId()));
 
             return defaultProject;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Adds an empty project to the database
+     *
+     * @param workspaceId the parent workspace id
+     * @param name        the name of the project
+     * @return a project object with name, id and columns set
+     */
+    public static Project addProject(int workspaceId, String name) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+
+            Project project = new Project();
+            project.setName(name);
+            project.setColumns(new ArrayList<>());
+
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "INSERT INTO projects (name, workspace_id) values (?,?) ");
+            preparedStatement.setString(1, project.getName());
+            preparedStatement.setInt(2, workspaceId);
+            preparedStatement.execute();
+
+            ResultSet resultSet = conn.prepareStatement(
+                    "SELECT id FROM projects ORDER BY rowid DESC LIMIT 1").executeQuery();
+            resultSet.next();
+
+            project.setId(resultSet.getInt(1));
+
+            return project;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -574,6 +608,34 @@ public class DBManager {
             e.printStackTrace();
             return false;
         }
+        return true;
+    }
+
+    /**
+     * updates task on the database
+     *
+     * @param task the task to update
+     */
+
+    public static boolean updateTask(Task task) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "update tasks set name = ?, description = ?, duedate = ?, state = ?, column_id = ? where id = ? "
+//                    "insert into tasks (name, description, duedate, state, column_id) values (?,?,?,?,?);"
+            );
+            preparedStatement.setString(1, task.getName());
+            preparedStatement.setString(2, task.getDescription());
+            preparedStatement.setDate(3, new Date(task.getDueDate().getTimeInMillis()));
+            preparedStatement.setString(4, task.getState().name());
+            preparedStatement.setInt(5, task.getColumn().getId());
+            preparedStatement.setInt(6, task.getId());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         return true;
     }
 }
