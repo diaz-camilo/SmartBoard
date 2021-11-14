@@ -2,6 +2,7 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
+import com.smartboard.Utils.Utils;
 import com.smartboard.models.Column;
 import com.smartboard.models.Task;
 import com.smartboard.models.TaskState;
@@ -12,6 +13,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -109,5 +112,25 @@ public class ColumnController {
 
     public void deleteColumn(ActionEvent event) {
         model.getProject().getController().removeColumn(this);
+    }
+
+    public void handleOnDragDropped(DragEvent event) {
+        //retrieve task controller
+        TaskController taskController = (TaskController) Utils.getDraggingObj();
+        taskController.getModel().setColumn(this.model);
+
+        //update DB
+        DBManager.updateTask(taskController.getModel());
+
+        // update UI
+        this.taskCardsContainer.getChildren().add(taskController.getView());
+        event.consume();
+    }
+
+    public void handleOnDragOver(DragEvent event) {
+        if (event.getGestureSource() != this.view && event.getDragboard().hasString()) {
+            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        }
+        event.consume();
     }
 }

@@ -1,7 +1,9 @@
 package com.smartboard.Utils;
 
+import com.smartboard.controllers.TaskController;
 import javafx.event.ActionEvent;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Utils {
@@ -30,4 +32,14 @@ public class Utils {
     }
 
 
+    // Helper methods to assist drag and drop task
+    private static Object trackingObj;
+
+    public static void setDraggingObj(Object trackingObj) {
+        Utils.trackingObj = trackingObj;
+    }
+
+    public static Object getDraggingObj() {
+        return trackingObj;
+    }
 }

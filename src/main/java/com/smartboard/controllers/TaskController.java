@@ -2,6 +2,7 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
+import com.smartboard.Utils.Utils;
 import com.smartboard.models.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,6 +14,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -42,6 +48,7 @@ public class TaskController {
     private final SimpleDateFormat dateFormat =
             new SimpleDateFormat("d MMM yy");
     public TextArea description;
+    public VBox taskCard;
 
     private Task model;
     private Node view;
@@ -157,5 +164,17 @@ public class TaskController {
 
         // update DB
         DBManager.updateTask(model);
+    }
+
+    public void handleOnDragDetected(MouseEvent mouseEvent) {
+        Utils.setDraggingObj(this);
+        Dragboard db = this.taskCard.startDragAndDrop(TransferMode.ANY);
+        ClipboardContent content = new ClipboardContent();
+        content.putString("my task");
+        db.setContent(content);
+    }
+
+    public void handleOnMouseDragged(MouseEvent mouseEvent) {
+        mouseEvent.setDragDetect(true);
     }
 }
