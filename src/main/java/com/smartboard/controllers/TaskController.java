@@ -14,10 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -172,5 +169,22 @@ public class TaskController {
 
     public void handleOnMouseDragged(MouseEvent mouseEvent) {
         mouseEvent.setDragDetect(true);
+    }
+
+    public void handleOnDragDropped(DragEvent event) {
+        TaskController theTaskDropped = (TaskController) Utils.getDraggingObj();
+        // the column I belong
+        ColumnController myController = this.model.getColumn().getController();
+        ColumnController theirController = theTaskDropped.getModel().getColumn().getController();
+
+
+        if (myController == theirController && theTaskDropped != this) {
+            //reorder tasks
+            var childrenList = myController.taskCardsContainer.getChildren();
+            childrenList.remove(theTaskDropped.view);
+            int myPossition = childrenList.indexOf(this.view);
+            childrenList.add(myPossition, theTaskDropped.view);
+            event.consume();
+        }
     }
 }

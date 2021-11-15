@@ -144,6 +144,11 @@ public class MainApplicationController {
             this.tabsProjects.getTabs().add(tab); // add each project
         } // projects for loop
 
+        if (this.model.getDefaultProject() != null) {
+            Tab defaultTab = this.model.getDefaultProject().getController().getView();
+            defaultTab.setText("(*) " + defaultTab.getText());
+            this.tabsProjects.getSelectionModel().select(defaultTab);
+        }
     }
 
     @FXML
@@ -206,4 +211,17 @@ public class MainApplicationController {
         this.tabsProjects.getTabs().add(tab);
     }
 
+    public void setDefaultProject(ProjectController defaultProjectController) {
+        // Update model
+        this.model.setDefaultProject(defaultProjectController.getModel());
+
+        // Update DB
+        DBManager.updateWorkspace(this.model);
+
+        // update view
+        for (Project project : this.model.getProjects()) {
+            project.getController().setTabName(project.getName());
+        }
+        defaultProjectController.setTabName("(*) " + defaultProjectController.getModel().getName());
+    }
 }

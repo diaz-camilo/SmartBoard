@@ -713,4 +713,49 @@ public class DBManager {
         }
         throw new UserException("> Something went wrong, please ty again");
     }
+
+    public static boolean updateUser(String username, String firstname, String lastname, String profilePicPath) throws UserException {
+        String errorMessage = "";
+        if (Utils.NullOrEmpty(firstname))
+            errorMessage += "> First Name can not be empty\n";
+        if (Utils.NullOrEmpty(lastname))
+            errorMessage += "> Last Name can not be empty\n";
+
+
+        if (!errorMessage.isBlank())
+            throw new UserException(errorMessage.substring(0, errorMessage.length() - 1));
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+
+            PreparedStatement userStatement = conn.prepareStatement(
+                    "update users set firstname = ?, lastname = ?, profile_picture_path = ? where username = ?;");
+            userStatement.setString(1, firstname);
+            userStatement.setString(2, lastname);
+            userStatement.setString(3, profilePicPath);
+            userStatement.setString(4, username);
+
+            userStatement.execute();
+
+            return true;
+
+        } catch (SQLException e) {
+            if (e.getMessage().toLowerCase().contains("unique constraint failed: users.username"))
+                throw new UserException("> Username already taken, please try a different Username");
+        }
+        throw new UserException("> Something went wrong, please ty again");
+    }
+
+    public static void updateWorkspace(Workspace workspace) {
+        try (Connection conn = DriverManager.getConnection(url)) {
+            conn.prepareStatement("pragma foreign_keys = on;").execute();
+            PreparedStatement preparedStatement = conn.prepareStatement(
+                    "update workspaces set default_project = ? where id = ?; ");
+            preparedStatement.setInt(1, workspace.getDefaultProject().getId());
+            preparedStatement.setInt(2, workspace.getId());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

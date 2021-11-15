@@ -66,12 +66,20 @@ public class EditProfileController {
             lblPasswordError.setVisible(true);
         } else {
             try {
+                // get active user
+                User user = MainApplicationController.activeUser;
+
                 // update DB
-                DBManager.updateUser(username.getText(),
-                        password.getText(), firstname.getText(), lastname.getText(), profilePicPath);
+                if (password.getText().strip().isBlank()) {
+                    DBManager.updateUser(username.getText(),
+                            firstname.getText(), lastname.getText(), profilePicPath);
+                } else {
+                    DBManager.updateUser(username.getText(),
+                            password.getText(), firstname.getText(), lastname.getText(), profilePicPath);
+                    user.getLogin().setPassword(password.getText());
+                }
 
                 // update model
-                User user = MainApplicationController.activeUser;
                 user.setFirstName(firstname.getText());
                 user.setLastName(lastname.getText());
                 user.setProfilePicturePath(profilePicPath);

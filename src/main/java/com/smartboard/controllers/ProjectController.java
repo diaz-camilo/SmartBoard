@@ -110,4 +110,21 @@ public class ProjectController {
     public void deleteProject(ActionEvent event) {
         model.getWorkSpace().getController().removeProject(this);
     }
+
+    public void setDefaultProject(ActionEvent event) {
+        // update DB
+
+        //Change tab title
+        this.projectTab.setText(this.model.getName() + " (*)");
+
+        // reset other tabs titles
+        this.model.getWorkSpace().getController().setDefaultProject(this);
+
+        // set tab to be first
+
+    }
+
+    public void setTabName(String name) {
+        this.projectTab.setText(name);
+    }
 }

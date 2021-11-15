@@ -91,7 +91,7 @@ public class ColumnController {
     }
 
     public void addChildren(Node taskNode) {
-        taskCardsContainer.getChildren().add(taskNode);
+        taskCardsContainer.getChildren().add(0, taskNode);
     }
 
     public void init(Column model, Node view) {
@@ -120,8 +120,11 @@ public class ColumnController {
         TaskController taskController = (TaskController) Utils.getDraggingObj();
 
         if (this.taskCardsContainer.getChildren().contains(taskController.getView())) {
+            System.out.println("same column");
             // todo reorder tasks
+            // let the event propagate to the task
         } else {
+            System.out.println("different Column");
 
             taskController.getModel().setColumn(this.model);
 
@@ -130,8 +133,8 @@ public class ColumnController {
 
             // update UI
             this.taskCardsContainer.getChildren().add(taskController.getView());
+            event.consume();
         }
-        event.consume();
     }
 
     public void handleOnDragOver(DragEvent event) {
