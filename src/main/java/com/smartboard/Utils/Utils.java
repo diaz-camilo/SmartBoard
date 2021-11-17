@@ -48,6 +48,7 @@ public class Utils {
      * @return the stage where the event originated
      */
     public static Stage getStageFromEvent(Event event) {
+        // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
         Node source = (Node) event.getSource();
         return (Stage) source.getScene().getWindow();
     }

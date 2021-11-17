@@ -1,5 +1,6 @@
 package com.smartboard.models;
 
+import com.smartboard.Utils.DBManager;
 import com.smartboard.controllers.ProjectController;
 
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ public class Project implements Identifiable {
      */
     public List<Column> removeColumn(Column column) {
         this.columns.remove(column);
+        DBManager.deleteColumn(column);
         return this.columns;
     }
 

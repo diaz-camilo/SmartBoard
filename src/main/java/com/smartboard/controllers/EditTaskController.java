@@ -2,13 +2,17 @@ package com.smartboard.controllers;
 
 import com.smartboard.Utils.Utils;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,11 +47,11 @@ public class EditTaskController {
 
     }
 
-    public void closeWindow(ActionEvent event) {
+    public void closeWindow(Event event) {
         Utils.getStageFromEvent(event).close();
     }
 
-    public void save(ActionEvent event) {
+    public void save(Event event) {
         // extract info
         String newName = this.name.getText();
         String newDescription = this.description.getText();
@@ -70,5 +74,10 @@ public class EditTaskController {
 
     public void cancel(ActionEvent event) {
         closeWindow(event);
+    }
+
+    public void onEnter(KeyEvent keyEvent) throws IOException {
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            save(keyEvent);
     }
 }

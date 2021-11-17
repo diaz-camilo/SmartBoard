@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="776.0" maxWidth="403.0" minHeight="436.0" minWidth="400.0" prefHeight="850.0" prefWidth="402.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.SignUpController">
+<GridPane maxHeight="881.0" maxWidth="403.0" minHeight="436.0" minWidth="400.0" onKeyPressed="#onEnter" prefHeight="881.0" prefWidth="404.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.SignUpController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="76.0" minWidth="10.0" prefWidth="68.0" />
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="424.0" minWidth="10.0" prefWidth="272.0" />
@@ -23,7 +23,7 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="267.0" minHeight="0.0" prefHeight="0.0" valignment="BOTTOM" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="754.0" minHeight="10.0" prefHeight="754.0" valignment="BOTTOM" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="849.0" minHeight="10.0" prefHeight="849.0" valignment="BOTTOM" vgrow="SOMETIMES" />
         <RowConstraints maxHeight="120.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
@@ -38,28 +38,28 @@
                         </Label>
                     </children>
                 </HBox>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                      <ImageView fx:id="profilePic" fitHeight="90.0" fitWidth="90.0" onMouseClicked="#handleOnImageClick" pickOnBounds="true" preserveRatio="true" />
-               </children>
-            </HBox>
-            <Label text="Click Image To Change" />
-            <Separator prefWidth="200.0" />
+                <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <ImageView fx:id="profilePic" fitHeight="90.0" fitWidth="90.0" onMouseClicked="#handleOnImageClick" pickOnBounds="true" preserveRatio="true" />
+                    </children>
+                </HBox>
+                <Label text="Click Image To Change" />
+                <Separator prefWidth="200.0" />
                 <Label fx:id="lblSignUpError" textFill="RED" wrapText="true" />
-            <Label text="FirstName" />
+                <Label text="FirstName" />
                 <TextField fx:id="firstname" layoutX="30.0" layoutY="216.0" promptText="First name" />
-            <Label text="Last Name" />
+                <Label text="Last Name" />
                 <TextField fx:id="lastname" layoutX="30.0" layoutY="394.0" promptText="Last name" />
-            <Label text="Username " />
+                <Label text="Username " />
                 <TextField fx:id="username" promptText="Username" />
-            <Label text="Password" />
+                <Label text="Password" />
                 <PasswordField fx:id="password" layoutX="30.0" layoutY="276.0" promptText="Password" />
-            <Label text="Confirm Password" />
+                <Label text="Confirm Password" />
                 <PasswordField fx:id="passwordConfirm" promptText="Re enter password" />
                 <Label fx:id="lblPasswordError" minHeight="0.0" prefHeight="0.0" textFill="RED" visible="false" />
                 <HBox alignment="CENTER" spacing="15.0">
                     <children>
-                        <Button fx:id="btnSignUp" mnemonicParsing="false" onAction="#SignUp" text="Sign Up" />
+                        <Button fx:id="btnSignUp" mnemonicParsing="false" onAction="#signUp" text="Sign Up" />
                         <Button fx:id="btnClose" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#close" text="Close" />
                     </children>
                 </HBox>

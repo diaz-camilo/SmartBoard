@@ -6,7 +6,6 @@ import com.smartboard.controllers.MainApplicationController;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -29,12 +28,12 @@ public class Workspace implements Identifiable {
 
 
     public Workspace(User user) {
-        this.username = user.getUsermane();
+        this.username = user.getUsername();
         this.quotes = loadQuotes();
-        this.id = DBManager.getWorkSpaceId(user.getUsermane());
+        this.id = DBManager.getWorkSpaceId(user.getUsername());
         this.projects = DBManager.getUserProjects(this);
         List<Project> tempProjects = this.projects.parallelStream()
-                .filter(x -> x.getId() == DBManager.getDefaultProject(user.getUsermane()))
+                .filter(x -> x.getId() == DBManager.getDefaultProject(user.getUsername()))
                 .collect(Collectors.toList());
         this.defaultProject = tempProjects.size() == 0 ? null : tempProjects.get(0);
         populateProjectColumns(this.defaultProject);

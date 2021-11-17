@@ -152,7 +152,6 @@ public class MainApplicationController {
     }
 
     public void removeProject(ProjectController projectController) {
-        System.out.println("MAController::removePriject");
 
         // remove project from DB
         DBManager.deleteProject(projectController.getModel());
@@ -160,7 +159,6 @@ public class MainApplicationController {
         // remove project from model
         boolean result = this.tabsProjects.getTabs().remove(this.tabsProjects.getSelectionModel().getSelectedItem());
 
-        System.out.println(result);
     }
 
     public void addNewProject(ActionEvent event) throws IOException {

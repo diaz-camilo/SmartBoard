@@ -10,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -58,8 +57,8 @@ public class ProjectController {
         // remove from UI
         this.columnsContainer.getChildren().remove(columnController.getView());
 
-        // remove from DB
-        DBManager.deleteColumn(columnController.getModel());
+        // remove from model
+        this.model.removeColumn(columnController.getModel());
     }
 
     public void addColumn(ActionEvent event) throws IOException {
@@ -72,7 +71,12 @@ public class ProjectController {
             return;
 
         // create column obj
-        Column column = DBManager.addColumn(this.model.getId(), columnName);
+
+//        Column column = DBManager.addColumn(this.model.getId(), columnName);
+
+
+        Column column = new Column(columnName, this.model);
+
         column.setProject(this.model);
         this.model.getColumns().add(column);
 

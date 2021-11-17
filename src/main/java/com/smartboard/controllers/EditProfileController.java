@@ -1,20 +1,20 @@
 package com.smartboard.controllers;
 
-import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
+import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
 import com.smartboard.models.User;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -58,7 +58,7 @@ public class EditProfileController {
 
 
     @FXML
-    void saveChanges(ActionEvent event) throws IOException {
+    void saveChanges(Event event) throws IOException {
         if (!password.getText().equals(passwordConfirm.getText())) {
             lblPasswordError.setText("Password does not match");
             lblPasswordError.setPrefHeight(Label.USE_COMPUTED_SIZE);
@@ -95,16 +95,14 @@ public class EditProfileController {
     }
 
     @FXML
-    void close(ActionEvent event) {
-        // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
-        ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+    void close(Event event) {
+        Utils.getStageFromEvent(event).close();
     }
 
 
     public void handleOnImageClick(MouseEvent mouseEvent) {
 
-        Node source = (Node) mouseEvent.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
+        Stage stage = Utils.getStageFromEvent(mouseEvent);
 
         FileChooser fileChooser = new FileChooser();
         File selectedFile = fileChooser.showOpenDialog(stage);
@@ -124,7 +122,7 @@ public class EditProfileController {
         this.mainAppController = mainApplicationController;
         User user = MainApplicationController.activeUser;
         // load and set user data into view
-        this.username.setText(user.getUsermane());
+        this.username.setText(user.getUsername());
         this.firstname.setText(user.getFirstName());
         this.lastname.setText(user.getLastName());
         String profilePicPath = user.getProfilePicturePath();
@@ -132,10 +130,16 @@ public class EditProfileController {
         if (profilePicPath != null) {
             try {
                 this.profilePic.setImage(new Image(new FileInputStream(profilePicPath)));
+                this.profilePicPath = profilePicPath;
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 System.out.println("unable to load profile pic EditProfileController::init");
             }
         }
+    }
+
+    public void onEnter(KeyEvent keyEvent) throws IOException {
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            saveChanges(keyEvent);
     }
 }

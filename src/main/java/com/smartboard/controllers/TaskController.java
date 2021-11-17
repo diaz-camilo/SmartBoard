@@ -38,10 +38,6 @@ public class TaskController {
     @FXML
     private Label dueDate;
     @FXML
-    private Hyperlink linkDelete;
-    @FXML
-    private Hyperlink linkEdit;
-    @FXML
     private TextArea description;
     @FXML
     private VBox taskCard;
@@ -210,7 +206,6 @@ public class TaskController {
             childrenList.add(myPosition, theTaskDropped.view);
             // in model
             this.model.getColumn().shiftTasks(myPosition, theTaskDropped.getModel());
-//            event.consume();
         }
     }
 }

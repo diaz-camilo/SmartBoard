@@ -17,7 +17,7 @@ class ColumnTest {
 
     @BeforeEach
     void setUp() {
-        col = new Column();
+//        col = new Column();
 
         t1 = new Task();
         t1.setColumn(col);

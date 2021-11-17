@@ -3,12 +3,15 @@ package com.smartboard.controllers;
 import com.smartboard.Application;
 import com.smartboard.Utils.DBManager;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -49,8 +52,8 @@ public class loginController {
     }
 
     @FXML
-    public void login(ActionEvent event) throws IOException {
-        if (DBManager.AuthenticateUser(username.getText(), password.getText())) {
+    public void login(Event event) throws IOException {
+        if (DBManager.authenticateUser(username.getText(), password.getText())) {
             MainApplicationController.activeUser = DBManager.getUser(username.getText());
             // get main Stage - technique from Bro Code YouTube channel https://www.youtube.com/watch?v=wxhGKR3PQpo
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
@@ -80,4 +83,12 @@ public class loginController {
         stage.setScene(scene);
         stage.show();
     }
+
+
+    public void onEnter(KeyEvent keyEvent) throws IOException {
+        if (keyEvent.getCode() == KeyCode.ENTER)
+            login(keyEvent);
+    }
+
+
 }

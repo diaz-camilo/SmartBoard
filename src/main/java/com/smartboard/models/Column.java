@@ -1,6 +1,8 @@
 package com.smartboard.models;
 
+import com.smartboard.Utils.DBManager;
 import com.smartboard.controllers.ColumnController;
+import com.smartboard.controllers.ProjectController;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,6 +15,7 @@ public class Column implements Identifiable, Updatable, Deletable {
     private List<Task> tasks;
     private Project project;
     private ColumnController controller;
+
 
     public Column() {
         this.tasks = new ArrayList<>();
@@ -27,6 +30,13 @@ public class Column implements Identifiable, Updatable, Deletable {
 
     public Column(int id) {
         this.id = id;
+    }
+
+    public Column(String name, Project project) {
+        this.name = name;
+        this.project = project;
+        this.tasks = new ArrayList<>();
+        this.id = DBManager.addColumn(this);
     }
 
     public int getId() {
