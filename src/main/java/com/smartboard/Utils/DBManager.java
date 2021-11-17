@@ -271,12 +271,13 @@ public class DBManager {
     public static Task addTask(Task task) {
         try (Connection conn = DriverManager.getConnection(url)) {
             PreparedStatement preparedStatement = conn.prepareStatement(
-                    "insert into tasks (name, description, duedate, state, column_id) values (?,?,?,?,?);");
+                    "insert into tasks (name, description, duedate, state, column_id, \"index\") values (?,?,?,?,?,?);");
             preparedStatement.setString(1, task.getName());
             preparedStatement.setString(2, task.getDescription());
             preparedStatement.setDate(3, new Date(task.getDueDate().getTimeInMillis()));
             preparedStatement.setString(4, task.getState().name());
             preparedStatement.setInt(5, task.getColumn().getId());
+            preparedStatement.setInt(6, task.getIndex());
             preparedStatement.execute();
 
             ResultSet resultSet = conn.prepareStatement(
@@ -537,6 +538,7 @@ public class DBManager {
                 cal.setTimeInMillis(resultSet.getDate("duedate").getTime());
                 task.setDueDate(cal);
                 task.setState(TaskState.valueOf(resultSet.getString("state")));
+                task.setIndex(resultSet.getInt("index"));
                 task.setListItems(loadListItems(task));
 
                 tasks.add(task);
@@ -623,14 +625,15 @@ public class DBManager {
         try (Connection conn = DriverManager.getConnection(url)) {
             conn.prepareStatement("pragma foreign_keys = on;").execute();
             PreparedStatement preparedStatement = conn.prepareStatement(
-                    "update tasks set name = ?, description = ?, duedate = ?, state = ?, column_id = ? where id = ? "
+                    "update tasks set name = ?, description = ?, duedate = ?, state = ?, column_id = ?, \"index\" = ? where id = ? "
             );
             preparedStatement.setString(1, task.getName());
             preparedStatement.setString(2, task.getDescription());
             preparedStatement.setDate(3, new Date(task.getDueDate().getTimeInMillis()));
             preparedStatement.setString(4, task.getState().name());
             preparedStatement.setInt(5, task.getColumn().getId());
-            preparedStatement.setInt(6, task.getId());
+            preparedStatement.setInt(6, task.getIndex());
+            preparedStatement.setInt(7, task.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -751,7 +754,11 @@ public class DBManager {
             conn.prepareStatement("pragma foreign_keys = on;").execute();
             PreparedStatement preparedStatement = conn.prepareStatement(
                     "update workspaces set default_project = ? where id = ?; ");
-            preparedStatement.setInt(1, workspace.getDefaultProject().getId());
+            if (workspace.getDefaultProject() == null) {
+                preparedStatement.setNull(1, Types.INTEGER);
+            } else {
+                preparedStatement.setInt(1, workspace.getDefaultProject().getId());
+            }
             preparedStatement.setInt(2, workspace.getId());
             preparedStatement.execute();
         } catch (SQLException e) {

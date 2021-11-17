@@ -3,9 +3,10 @@ package com.smartboard.models;
 import com.smartboard.controllers.ColumnController;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class Column implements Identifiable {
+public class Column implements Identifiable, Updatable, Deletable {
 
     private int id;
     private String name;
@@ -45,6 +46,7 @@ public class Column implements Identifiable {
     }
 
     public List<Task> getTasks() {
+        tasks.sort(Comparator.comparingInt(Task::getIndex));
         return tasks;
     }
 
@@ -84,10 +86,27 @@ public class Column implements Identifiable {
      */
     public List<Task> removeTask(Task task) {
         this.tasks.remove(task);
+        this.tasks.forEach(t -> t.changeIndex(this.tasks.indexOf(t)));
         return this.tasks;
     }
 
     public ColumnController getController() {
         return this.controller;
+    }
+
+    @Override
+    public boolean delete() {
+        return false;
+    }
+
+    @Override
+    public boolean update() {
+        return false;
+    }
+
+    public void shiftTasks(int index, Task model) {
+        this.tasks.remove(model);
+        this.tasks.add(index, model);
+        this.tasks.forEach(task -> task.changeIndex(this.tasks.indexOf(task)));
     }
 }

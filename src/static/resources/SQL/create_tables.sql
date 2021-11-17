@@ -16,10 +16,13 @@ create table logins
 
 create table workspaces
 (
-    id integer primary key unique not null,
-    username                      not null references users (username)
+    id              integer primary key unique not null,
+    username                                   not null references users (username)
         on delete cascade
-        on update cascade
+        on update cascade,
+    default_project INTEGER
+                                               references projects (id)
+                                                   on update set null on delete set null
 );
 
 create table projects
@@ -49,7 +52,9 @@ create table tasks
     state       integer                    not null,
     column_id                              not null references columns (id)
         on delete cascade
-        on update cascade
+        on update cascade, [
+    index]
+    INT
 );
 
 create table list_items

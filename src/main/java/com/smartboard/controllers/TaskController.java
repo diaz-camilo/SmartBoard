@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -29,26 +30,25 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class TaskController {
-    @FXML
-    public Text name;
-    @FXML
-    public ImageView imgClock;
-    @FXML
-    public Label dueDate;
-
 
     @FXML
-    public Hyperlink linkDelete;
+    private Text name;
     @FXML
-    public Hyperlink linkEdit;
-
-    private final SimpleDateFormat dateFormat =
-            new SimpleDateFormat("d MMM yy");
-    public TextArea description;
-    public VBox taskCard;
+    private ImageView imgClock;
+    @FXML
+    private Label dueDate;
+    @FXML
+    private Hyperlink linkDelete;
+    @FXML
+    private Hyperlink linkEdit;
+    @FXML
+    private TextArea description;
+    @FXML
+    private VBox taskCard;
 
     private Task model;
     private Node view;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("d MMM yy");
 
     public Text getName() {
         return name;
@@ -60,14 +60,6 @@ public class TaskController {
 
     public void setNameText(String name) {
         this.name.setText(name);
-    }
-
-    public Label getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Label dueDate) {
-        this.dueDate = dueDate;
     }
 
     public void setDueDateText(String dateText) {
@@ -90,58 +82,80 @@ public class TaskController {
         return model;
     }
 
-    public void setModel(Task model) {
-        this.model = model;
-    }
-
     public Node getView() {
         return view;
     }
 
-    public void setView(Node view) {
-        this.view = view;
-    }
-
-
-    @FXML
-    public void deleteTask(ActionEvent event) {
-        model.getColumn().getController().removeTask(this);
-    }
-
-    public void init(Task model, Node view) {
+    /**
+     * @param model
+     */
+    public void init(Task model) {
+        // set model and view on this controller
         this.model = model;
-        this.view = view;
+        this.view = this.taskCard;
+
+        // set controller on model
         this.model.setController(this);
 
+        // set view to reflect model
         try {
             imgClock.setImage(new Image(new FileInputStream("src/static/resources/img/task_clock.png")));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        String dueDate = dateFormat.format(model.getDueDate().getTime());
         name.setText(model.getName());
-        String duesDate = dateFormat.format(model.getDueDate().getTime());
-        dueDate.setText(duesDate);
+        this.dueDate.setText(dueDate);
         description.setText(model.getDescription());
     }
 
-
+    /**
+     * deletes task from model and view
+     *
+     * @param event
+     */
     @FXML
-    public void editTask(ActionEvent event) throws IOException {
-        // generate edit task stage
-        FXMLLoader loader = new FXMLLoader(Application.class.getResource("editTask.fxml"));
+    public void onDeleteLinkClick(ActionEvent event) {
+        // remove from column
+        model.getColumn().getController().removeTask(this.view);
+        // remove from DB
+        model.delete();
+    }
+
+    /**
+     * invokes a helper stage to edit the task details.
+     *
+     * @param event
+     * @throws IOException
+     */
+    @FXML
+    public void onEditLinkClick(ActionEvent event) throws IOException {
+        // generate edit window stage
         Stage editStage = new Stage();
         editStage.initModality(Modality.APPLICATION_MODAL);
         editStage.setTitle("Edit Task");
-        editStage.setScene(new Scene(loader.load()));
 
+        // generate edit task and initiate its controller with this controller,
+        // so it can talk back
+        FXMLLoader loader = new FXMLLoader(Application.class.getResource("editTask.fxml"));
+        Parent editTask = loader.load();
         EditTaskController controller = loader.getController();
         controller.init(this);
 
+        // set scene and show
+        editStage.setScene(new Scene(editTask));
         editStage.showAndWait();
     }
 
+    /**
+     * updates view with the given arguments and also updates the model
+     *
+     * @param newName
+     * @param newDescription
+     * @param newDate
+     * @throws ParseException
+     */
     public void saveChanges(String newName, String newDescription, String newDate) throws ParseException {
-
         // update model
         Calendar newCalendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("d MMM. yy", Locale.ENGLISH);
@@ -150,16 +164,17 @@ public class TaskController {
         // todo if model is valid, continue. else display error
 
         // update view
-
         setNameText(newName);
         setDescriptionText(newDescription);
         setDueDateText(newDate);
-
-        // update DB
-        DBManager.updateTask(model);
     }
 
-    public void handleOnDragDetected(MouseEvent mouseEvent) {
+    /**
+     * sets up the application for dragging
+     *
+     * @param mouseEvent
+     */
+    public void onDragDetected(MouseEvent mouseEvent) {
         Utils.setDraggingObj(this);
         Dragboard db = this.taskCard.startDragAndDrop(TransferMode.ANY);
         ClipboardContent content = new ClipboardContent();
@@ -167,12 +182,20 @@ public class TaskController {
         db.setContent(content);
     }
 
-    public void handleOnMouseDragged(MouseEvent mouseEvent) {
+    public void onMouseDragged(MouseEvent mouseEvent) {
         mouseEvent.setDragDetect(true);
     }
 
-    public void handleOnDragDropped(DragEvent event) {
+    /**
+     * Handles when a task is dropped on another task for reordering.
+     * The task being dropped will be placed on top of the task below
+     *
+     * @param event
+     */
+    public void onDragDropped(DragEvent event) {
+        // retrieve task from temp holding storage
         TaskController theTaskDropped = (TaskController) Utils.getDraggingObj();
+
         // the column I belong
         ColumnController myController = this.model.getColumn().getController();
         ColumnController theirController = theTaskDropped.getModel().getColumn().getController();
@@ -182,9 +205,12 @@ public class TaskController {
             //reorder tasks
             var childrenList = myController.taskCardsContainer.getChildren();
             childrenList.remove(theTaskDropped.view);
-            int myPossition = childrenList.indexOf(this.view);
-            childrenList.add(myPossition, theTaskDropped.view);
-            event.consume();
+            int myPosition = childrenList.indexOf(this.view);
+            // in view
+            childrenList.add(myPosition, theTaskDropped.view);
+            // in model
+            this.model.getColumn().shiftTasks(myPosition, theTaskDropped.getModel());
+//            event.consume();
         }
     }
 }

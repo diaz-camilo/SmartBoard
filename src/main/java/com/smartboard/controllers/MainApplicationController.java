@@ -136,8 +136,8 @@ public class MainApplicationController {
                     FXMLLoader taskLoader = new FXMLLoader(Application.class.getResource("task.fxml"));
                     VBox vBoxTask = taskLoader.load();
                     TaskController taskController = taskLoader.getController();
-                    taskController.init(task, vBoxTask);
-                    columnController.addChildren(vBoxTask); // add each task
+                    taskController.init(task);
+                    columnController.addTask(vBoxTask); // add each task
                 }// tasks for loop
                 projectController.addColumn(vBoxColumn); // add each column
             } // columns for loop
@@ -149,30 +149,6 @@ public class MainApplicationController {
             defaultTab.setText("(*) " + defaultTab.getText());
             this.tabsProjects.getSelectionModel().select(defaultTab);
         }
-    }
-
-    @FXML
-    void ProjectAdd(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ProjectDelete(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ProjectRemove(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ProjectUpdate(ActionEvent event) {
-
-    }
-
-    public void addTask(ActionEvent event) {
-
     }
 
     public void removeProject(ProjectController projectController) {
@@ -223,5 +199,22 @@ public class MainApplicationController {
             project.getController().setTabName(project.getName());
         }
         defaultProjectController.setTabName("(*) " + defaultProjectController.getModel().getName());
+    }
+
+    public void onCloseApp(ActionEvent event) {
+        ((Stage) this.view.getScene().getWindow()).close();
+    }
+
+    public void onUnsetDefault(ActionEvent event) {
+        // Update model
+        this.model.setDefaultProject(null);
+
+        // Update DB
+        DBManager.updateWorkspace(this.model);
+
+        // update view
+        for (Project project : this.model.getProjects()) {
+            project.getController().setTabName(project.getName());
+        }
     }
 }

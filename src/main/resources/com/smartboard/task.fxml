@@ -10,45 +10,54 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:id="taskCard" onDragDetected="#handleOnDragDetected" onDragDropped="#handleOnDragDropped" onMouseDragged="#handleOnMouseDragged" style="-fx-border-color: #aaa; -fx-border-radius: 5;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.smartboard.controllers.TaskController">
+<VBox fx:id="taskCard" onDragDetected="#onDragDetected" onDragDropped="#onDragDropped"
+      onMouseDragged="#onMouseDragged" style="-fx-border-color: #aaa; -fx-border-radius: 5;"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartboard.controllers.TaskController">
     <children>
         <HBox alignment="CENTER_RIGHT" spacing="5.0">
             <children>
-                <Hyperlink fx:id="linkEdit" onAction="#editTask" text="Edit" />
-                <Hyperlink fx:id="linkDelete" layoutX="10.0" layoutY="10.0" onAction="#deleteTask" text="Delete" />
+                <Hyperlink fx:id="linkEdit" onAction="#onEditLinkClick" text="Edit"/>
+                <Hyperlink fx:id="linkDelete" layoutX="10.0" layoutY="10.0" onAction="#onDeleteLinkClick"
+                           text="Delete"/>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </HBox>
         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="5.0">
             <children>
                 <Text fx:id="name" strokeType="OUTSIDE" strokeWidth="0.0" text="Paint the kitchen">
                     <font>
-                        <Font name="System Bold" size="18.0" />
+                        <Font name="System Bold" size="18.0"/>
                     </font>
                 </Text>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </HBox>
         <VBox spacing="5.0">
             <children>
-                <Label text="Description:" />
-                <TextArea fx:id="description" editable="false" prefHeight="100.0" />
+                <Label text="Description:"/>
+                <TextArea fx:id="description" editable="false" prefHeight="70.0"/>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </VBox>
         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="110.0" spacing="5.0">
             <children>
-                <ImageView fx:id="imgClock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
-                <Label fx:id="dueDate" text="Label" />
+                <Label text="Due on:">
+                    <font>
+                        <Font name="System Bold" size="14.0"/>
+                    </font>
+                </Label>
+                <ImageView fx:id="imgClock" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true"/>
+                <Label fx:id="dueDate" text="Label"/>
             </children>
             <VBox.margin>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
             </VBox.margin>
         </HBox>
     </children>

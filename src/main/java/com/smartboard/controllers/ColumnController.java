@@ -10,12 +10,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,36 +65,55 @@ public class ColumnController {
      * @param event add task button event
      */
     @FXML
-    public void addChildren(ActionEvent event) throws IOException {
+    public void addTask(ActionEvent event) throws IOException {
 
-        // set up task object
+
+        // set up new task object
         Task task = new Task();
-        task.setName("testing task");
+        task.setName("Task name");
+        task.setIndex(0);
         task.setColumn(this.model);
         task.setListItems(new ArrayList<>());
         task.setDueDate(Calendar.getInstance());
         task.setState(TaskState.ACTIVE);
-        task.setDescription("some description");
-        this.model.getTasks().add(task);
-
-        // add task to the DB
-        DBManager.addTask(task);
-
-        // add task to column obj
-        model.addTask(task);
+        task.setDescription("Write description here");
 
         // generate task node and controller
         FXMLLoader taskLoader = new FXMLLoader(Application.class.getResource("task.fxml"));
         VBox vBoxTask = taskLoader.load();
         TaskController taskController = taskLoader.getController();
-        taskController.init(task, vBoxTask);
+        taskController.init(task);
 
-        // add task to column UI
-        addChildren(vBoxTask);
+        // generate new task stage
+        FXMLLoader loader = new FXMLLoader(Application.class.getResource("newTask.fxml"));
+        Stage newTaskStage = new Stage();
+        newTaskStage.initModality(Modality.APPLICATION_MODAL);
+        newTaskStage.setTitle("New Task");
+        newTaskStage.setScene(new Scene(loader.load()));
+        NewTaskController newTaskController = loader.getController();
+        newTaskController.init(taskController);
+
+        newTaskStage.showAndWait();
+
+        if (newTaskController.isSaveTask()) {
+
+            // add task to the DB
+            DBManager.addTask(task);
+
+            // add task to column obj
+            model.shiftTasks(0, task);
+
+            // add task to column UI
+            addTaskOnTop(vBoxTask);
+        }
     }
 
-    public void addChildren(Node taskNode) {
+    public void addTaskOnTop(Node taskNode) {
         taskCardsContainer.getChildren().add(0, taskNode);
+    }
+
+    public void addTask(Node taskNode) {
+        taskCardsContainer.getChildren().add(taskNode);
     }
 
     public void init(Column model, Node view) {
@@ -102,12 +124,8 @@ public class ColumnController {
         lblColumnName.setText(model.getName());
     }
 
-    public void removeTask(TaskController taskController) {
-        // remove from UI
-        taskCardsContainer.getChildren().remove(taskController.getView());
-
-        // remove from DB
-        DBManager.deleteTask(taskController.getModel());
+    public void removeTask(Node task) {
+        taskCardsContainer.getChildren().remove(task);
     }
 
     public void deleteColumn(ActionEvent event) {
@@ -118,21 +136,23 @@ public class ColumnController {
 
         //retrieve task controller
         TaskController taskController = (TaskController) Utils.getDraggingObj();
+        Task task = taskController.getModel();
 
-        if (this.taskCardsContainer.getChildren().contains(taskController.getView())) {
-            System.out.println("same column");
-            // todo reorder tasks
-            // let the event propagate to the task
-        } else {
-            System.out.println("different Column");
+        if (!this.taskCardsContainer.getChildren().contains(taskController.getView())) {
 
-            taskController.getModel().setColumn(this.model);
+            // update model:
+            // * remove from previous column
+            task.getColumn().removeTask(taskController.getModel());
+            // * add to new column on top
+            task.setColumn(this.model);
+            this.model.shiftTasks(0, taskController.getModel());
 
-            //update DB
-            DBManager.updateTask(taskController.getModel());
+
+//            //update DB
+//            DBManager.updateTask(taskController.getModel());
 
             // update UI
-            this.taskCardsContainer.getChildren().add(taskController.getView());
+            this.taskCardsContainer.getChildren().add(0, taskController.getView());
             event.consume();
         }
     }

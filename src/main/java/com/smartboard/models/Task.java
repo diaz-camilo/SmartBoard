@@ -1,14 +1,15 @@
 package com.smartboard.models;
 
+import com.smartboard.Utils.DBManager;
 import com.smartboard.controllers.TaskController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-public class Task implements Identifiable {
+public class Task implements Identifiable, Updatable, Deletable {
     private int id;
+    private int index;
     private String name;
     private String description;
     private Calendar dueDate;
@@ -36,6 +37,19 @@ public class Task implements Identifiable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void changeIndex(int index) {
+        this.index = index;
+        update();
     }
 
     public Calendar getDueDate() {
@@ -118,5 +132,15 @@ public class Task implements Identifiable {
         name = newName;
         description = newDescription;
         dueDate = newDate;
+        DBManager.updateTask(this);
+    }
+
+    @Override
+    public boolean update() {
+        return DBManager.updateTask(this);
+    }
+
+    public boolean delete() {
+        return DBManager.deleteTask(this);
     }
 }

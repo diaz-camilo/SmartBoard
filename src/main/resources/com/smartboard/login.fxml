@@ -39,7 +39,9 @@
                 </HBox>
                 <Region prefHeight="26.0" prefWidth="233.0" />
             <Label fx:id="lblError" textAlignment="CENTER" textFill="RED" wrapText="true" />
+            <Label text="Username" />
                 <TextField fx:id="username" promptText="Username" />
+            <Label text="Password" />
                 <PasswordField fx:id="password" promptText="Password" />
                 <HBox alignment="CENTER" spacing="15.0">
                     <children>

@@ -103,7 +103,10 @@ public class ProjectController {
         DBManager.updateProject(model);
 
         // update UI
-        this.projectTab.setText(projectName);
+        String prefix = this.model == MainApplicationController.activeUser.getWorkSpace().getDefaultProject()
+                ? "(*) " : "";
+
+        this.projectTab.setText(prefix + projectName);
 
     }
 
@@ -112,15 +115,12 @@ public class ProjectController {
     }
 
     public void setDefaultProject(ActionEvent event) {
-        // update DB
 
         //Change tab title
         this.projectTab.setText(this.model.getName() + " (*)");
 
         // reset other tabs titles
         this.model.getWorkSpace().getController().setDefaultProject(this);
-
-        // set tab to be first
 
     }
 

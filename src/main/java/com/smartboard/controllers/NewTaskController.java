@@ -1,6 +1,5 @@
 package com.smartboard.controllers;
 
-import com.smartboard.Utils.Utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
-public class EditTaskController {
+public class NewTaskController {
 
     @FXML
     private DatePicker date;
@@ -27,6 +26,13 @@ public class EditTaskController {
     private TextField name;
 
     private TaskController taskController;
+
+
+    private boolean saveTask = false;
+
+    public boolean isSaveTask() {
+        return saveTask;
+    }
 
     public void init(TaskController taskController) {
         this.taskController = taskController;
@@ -44,10 +50,15 @@ public class EditTaskController {
     }
 
     public void closeWindow(ActionEvent event) {
-        Utils.getStageFromEvent(event).close();
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        stage.close();
     }
 
     public void save(ActionEvent event) {
+        // mark for saving
+        this.saveTask = true;
+
         // extract info
         String newName = this.name.getText();
         String newDescription = this.description.getText();

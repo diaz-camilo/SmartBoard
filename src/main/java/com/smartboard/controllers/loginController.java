@@ -44,8 +44,8 @@ public class loginController {
     @FXML
     public void initialize() throws IOException {
         // set user and password to speed testing
-        username.setText("bob");
-        password.setText("abc123");
+        username.setText("camilo");
+        password.setText("123");
     }
 
     @FXML
