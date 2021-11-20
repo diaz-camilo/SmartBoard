@@ -12,14 +12,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox onKeyPressed="#onEnter" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="360.0"
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onEnter"
       prefWidth="304.0" spacing="10.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.smartboard.controllers.NewTaskController">
+      fx:controller="com.smartboard.controllers.EditableTaskController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
-    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="New Task">
+    <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" text="Task">
         <font>
             <Font size="24.0"/>
         </font>
@@ -27,16 +26,17 @@
     <Separator prefWidth="200.0"/>
     <Label text="Name"/>
     <TextField fx:id="name"/>
+    <Label fx:id="nameError" textFill="RED"/>
     <Label text="Description"/>
     <TextArea fx:id="description" prefHeight="112.0" prefWidth="276.0"/>
+    <Label fx:id="descriptionError" textFill="RED"/>
     <Label text="Due date"/>
     <DatePicker fx:id="date" editable="false" prefHeight="25.0" prefWidth="291.0"/>
     <HBox spacing="10.0">
-        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false"
-                nodeOrientation="LEFT_TO_RIGHT" onAction="#save" prefHeight="25.0" prefWidth="339.0" text="save"
-                textAlignment="JUSTIFY"/>
+        <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT"
+                onAction="#save" prefHeight="25.0" prefWidth="339.0" text="save" textAlignment="JUSTIFY"/>
         <Button alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" mnemonicParsing="false"
-                nodeOrientation="LEFT_TO_RIGHT" onAction="#cancel" prefHeight="25.0" prefWidth="339.0"
-                text="cancel" textAlignment="JUSTIFY"/>
+                nodeOrientation="LEFT_TO_RIGHT" onAction="#cancel" prefHeight="25.0" prefWidth="339.0" text="cancel"
+                textAlignment="JUSTIFY"/>
     </HBox>
 </VBox>

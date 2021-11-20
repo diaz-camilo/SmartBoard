@@ -22,13 +22,15 @@ public class Task implements Identifiable, Updatable, Deletable {
         this.listItems = new ArrayList<>();
     }
 
-    public Task(String name, String description, Calendar dueDate, TaskState state, Column column) {
+    public Task(String name, String description, Calendar dueDate, TaskState state, Column column, int index) {
         this.name = name;
         this.description = description;
         this.dueDate = dueDate;
         this.state = state;
         this.column = column;
+        this.index = index;
         this.listItems = new ArrayList<>();
+        this.id = DBManager.createTask(this);
     }
 
     public int getId() {
@@ -132,7 +134,7 @@ public class Task implements Identifiable, Updatable, Deletable {
         name = newName;
         description = newDescription;
         dueDate = newDate;
-        DBManager.updateTask(this);
+        update();
     }
 
     @Override

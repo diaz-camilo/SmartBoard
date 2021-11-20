@@ -4,12 +4,12 @@ import com.smartboard.Utils.DBManager;
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
 
-public class User {
+public class User implements Updatable, Deletable {
 
     private String username;
     private String firstName;
     private String lastName;
-    private String profilePicturePath = "default_profile_pic.png";
+    private String profilePicturePath;
     private Login login;
     private Workspace workSpace;
 
@@ -38,7 +38,11 @@ public class User {
                 profilePicturePath : this.profilePicturePath;
         this.login = new Login(username, password, this);
         workSpace = new Workspace();
-        DBManager.registerUser(this);
+        DBManager.createUser(this);
+    }
+
+    public static User build(String username) {
+        return DBManager.readUser(username);
     }
 
 
@@ -88,5 +92,22 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public boolean delete() {
+        return DBManager.deleteUser(this);
+    }
+
+    @Override
+    public boolean update() {
+        return DBManager.updateUser(this);
+    }
+
+    public void updateDetails(String firstname, String lastname, String profilePicPath) throws UserException {
+        setFirstName(firstname);
+        setLastName(lastname);
+        setProfilePicturePath(profilePicPath);
+        update();
     }
 }

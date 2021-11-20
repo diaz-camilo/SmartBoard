@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Workspace implements Identifiable {
+public class Workspace implements Identifiable, Deletable, Updatable {
 
     private int id;
     private List<String> quotes;
@@ -26,18 +26,22 @@ public class Workspace implements Identifiable {
         this.quotes = loadQuotes();
     }
 
-
-    public Workspace(User user) {
-        this.username = user.getUsername();
-        this.quotes = loadQuotes();
-        this.id = DBManager.getWorkSpaceId(user.getUsername());
-        this.projects = DBManager.getUserProjects(this);
-        List<Project> tempProjects = this.projects.parallelStream()
-                .filter(x -> x.getId() == DBManager.getDefaultProject(user.getUsername()))
-                .collect(Collectors.toList());
-        this.defaultProject = tempProjects.size() == 0 ? null : tempProjects.get(0);
-        populateProjectColumns(this.defaultProject);
+    public static Workspace getUserWorkspace(User user) {
+        return DBManager.readWorkspace(user);
     }
+
+
+//    public Workspace(User user) {
+//        this.username = user.getUsername();
+//        this.quotes = loadQuotes();
+//        this.id = DBManager.readWorkspaceId(user.getUsername());
+//        this.projects = DBManager.readUserProjects(this);
+//        List<Project> tempProjects = this.projects.parallelStream()
+//                .filter(x -> x.getId() == DBManager.readDefaultProject(user.getUsername()))
+//                .collect(Collectors.toList());
+//        this.defaultProject = tempProjects.size() == 0 ? null : tempProjects.get(0);
+//        populateProjectColumns(this.defaultProject);
+//    }
 
     public MainApplicationController getController() {
         return controller;
@@ -95,10 +99,10 @@ public class Workspace implements Identifiable {
         this.username = username;
     }
 
-    private void populateProjectColumns(Project project) {
-        if (project != null)
-            project.setColumns(DBManager.getProjectColumns(project));
-    }
+//    private void populateProjectColumns(Project project) {
+//        if (project != null)
+//            project.setColumns(DBManager.readProjectColumns(project));
+//    }
 
     /**
      * Attempts to load a list of quotes from file src/static/resources/txt/quotes.txt if file not found
@@ -131,5 +135,20 @@ public class Workspace implements Identifiable {
         int selected = new Random().nextInt(numQuotes);
         String wholeQuote = this.quotes.get(selected);
         return wholeQuote.split("\\|");
+    }
+
+    @Override
+    public boolean delete() {
+        return false;
+    }
+
+    @Override
+    public boolean update() {
+        return DBManager.updateWorkspace(this);
+    }
+
+    public void setDefault(Project project) {
+        setDefaultProject(project);
+        update();
     }
 }

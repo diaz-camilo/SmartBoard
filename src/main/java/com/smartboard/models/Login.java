@@ -1,11 +1,12 @@
 package com.smartboard.models;
 
+import com.smartboard.Utils.DBManager;
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
 import org.mindrot.jbcrypt.BCrypt;
 
 
-public class Login {
+public class Login implements Updatable, Deletable {
     private String username;
     private String passwordHash;
     private User user;
@@ -16,8 +17,16 @@ public class Login {
         if (user == null)
             throw new UserException("User reference can not be null");
         this.username = username;
-        this.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.passwordHash = encryptPassword(password);
         this.user = user;
+    }
+
+    private String encryptPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
+    public static boolean authenticate(String username, String password) {
+        return DBManager.authenticateUser(username, password);
     }
 
     private void validateUsername(String username) throws UserException {
@@ -47,7 +56,7 @@ public class Login {
 
     public void setPassword(String password) throws UserException {
         validatePassword(password);
-        this.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+        this.passwordHash = encryptPassword(password);
     }
 
     public User getUser() {
@@ -56,5 +65,20 @@ public class Login {
 
     public boolean CheckPassword(String password) {
         return BCrypt.checkpw(password, passwordHash);
+    }
+
+    public void updatePassword(String newPassword) throws UserException {
+        this.setPassword(newPassword);
+        update();
+    }
+
+    @Override
+    public boolean delete() {
+        return false;
+    }
+
+    @Override
+    public boolean update() {
+        return DBManager.updateLogin(this);
     }
 }

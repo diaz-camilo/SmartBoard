@@ -16,7 +16,7 @@ class ProjectTest {
 
     @BeforeEach
     void setUp() {
-        pj = new Project();
+//        pj = new Project();
 
         c1 = new Column();
         c1.setId(1);

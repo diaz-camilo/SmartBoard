@@ -1,7 +1,6 @@
 package com.smartboard.controllers;
 
 import com.smartboard.Application;
-import com.smartboard.Utils.DBManager;
 import com.smartboard.Utils.Utils;
 import com.smartboard.models.Task;
 import javafx.event.ActionEvent;
@@ -10,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -83,7 +81,9 @@ public class TaskController {
     }
 
     /**
-     * @param model
+     * initiates the controller and set the model in the controller and vice versa
+     *
+     * @param model the task model
      */
     public void init(Task model) {
         // set model and view on this controller
@@ -106,7 +106,7 @@ public class TaskController {
     }
 
     /**
-     * deletes task from model and view
+     * delete task from model and view
      *
      * @param event
      */
@@ -133,10 +133,11 @@ public class TaskController {
 
         // generate edit task and initiate its controller with this controller,
         // so it can talk back
-        FXMLLoader loader = new FXMLLoader(Application.class.getResource("editTask.fxml"));
+        FXMLLoader loader = new FXMLLoader(Application.class.getResource("editableTask.fxml"));
         Parent editTask = loader.load();
-        EditTaskController controller = loader.getController();
+        EditableTaskController controller = loader.getController();
         controller.init(this);
+        controller.setTitle("Edit Task");
 
         // set scene and show
         editStage.setScene(new Scene(editTask));
@@ -157,7 +158,6 @@ public class TaskController {
         SimpleDateFormat sdf = new SimpleDateFormat("d MMM. yy", Locale.ENGLISH);
         newCalendar.setTime(sdf.parse(newDate));
         model.update(newName, newDescription, newCalendar);
-        // todo if model is valid, continue. else display error
 
         // update view
         setNameText(newName);

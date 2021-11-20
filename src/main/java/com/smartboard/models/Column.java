@@ -2,7 +2,6 @@ package com.smartboard.models;
 
 import com.smartboard.Utils.DBManager;
 import com.smartboard.controllers.ColumnController;
-import com.smartboard.controllers.ProjectController;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,7 +35,7 @@ public class Column implements Identifiable, Updatable, Deletable {
         this.name = name;
         this.project = project;
         this.tasks = new ArrayList<>();
-        this.id = DBManager.addColumn(this);
+        this.id = DBManager.createColumn(this);
     }
 
     public int getId() {
@@ -53,6 +52,7 @@ public class Column implements Identifiable, Updatable, Deletable {
 
     public void setName(String name) {
         this.name = name;
+        update();
     }
 
     public List<Task> getTasks() {
@@ -111,7 +111,7 @@ public class Column implements Identifiable, Updatable, Deletable {
 
     @Override
     public boolean update() {
-        return false;
+        return DBManager.updateColumn(this);
     }
 
     public void shiftTasks(int index, Task model) {

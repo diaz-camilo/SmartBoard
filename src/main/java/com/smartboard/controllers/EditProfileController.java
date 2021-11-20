@@ -1,13 +1,10 @@
 package com.smartboard.controllers;
 
-import com.smartboard.Utils.DBManager;
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
 import com.smartboard.models.User;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -23,31 +20,28 @@ import java.io.*;
 
 public class EditProfileController {
 
+    @FXML
     public ImageView profilePic;
-
     @FXML
     private TextField firstname;
-
     @FXML
     private TextField lastname;
-
     @FXML
     private Label lblPasswordError;
-
     @FXML
     private Label lblSignUpError;
-
     @FXML
     private PasswordField password;
-
     @FXML
     private PasswordField passwordConfirm;
-
     @FXML
     private TextField username;
     private String profilePicPath = null;
     private MainApplicationController mainAppController;
 
+    /**
+     * preload default profile pic
+     */
     public void initialize() {
         try {
             profilePic.setImage(new Image(new FileInputStream("src/static/resources/img/default_profile_pic.png")));
@@ -56,7 +50,12 @@ public class EditProfileController {
         }
     }
 
-
+    /**
+     * validates password and then attempts to update model and GUI
+     *
+     * @param event
+     * @throws IOException
+     */
     @FXML
     void saveChanges(Event event) throws IOException {
         if (!password.getText().equals(passwordConfirm.getText())) {
@@ -69,20 +68,11 @@ public class EditProfileController {
                 // get active user
                 User user = MainApplicationController.activeUser;
 
-                // update DB
-                if (password.getText().strip().isBlank()) {
-                    DBManager.updateUser(username.getText(),
-                            firstname.getText(), lastname.getText(), profilePicPath);
-                } else {
-                    DBManager.updateUser(username.getText(),
-                            password.getText(), firstname.getText(), lastname.getText(), profilePicPath);
-                    user.getLogin().setPassword(password.getText());
-                }
-
                 // update model
-                user.setFirstName(firstname.getText());
-                user.setLastName(lastname.getText());
-                user.setProfilePicturePath(profilePicPath);
+                user.updateDetails(firstname.getText(), lastname.getText(), profilePicPath);
+
+                if (!password.getText().strip().isBlank())
+                    user.getLogin().updatePassword(password.getText());
 
                 // update main app ui
                 this.mainAppController.username.setText(username.getText());

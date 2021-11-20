@@ -6,7 +6,7 @@ import com.smartboard.controllers.ProjectController;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Project implements Identifiable {
+public class Project implements Identifiable, Updatable, Deletable {
 
     private int id;
     private String name;
@@ -15,16 +15,34 @@ public class Project implements Identifiable {
     private ProjectController controller;
 
 
-    public Project() {
-        this.columns = new ArrayList<>();
-    }
+//    public Project() {
+//        this.columns = new ArrayList<>();
+//    }
+//
+//
 
-
-    public Project(int id, String name, Workspace workSpace) {
-        this();
+    /**
+     * Constructor to be used exvlusively by the DBManager when fetching and building
+     * the user's workspace from the database.
+     * <p>
+     * using this constructor will not trigger a database insert
+     *
+     * @param name      the mane of tghe project
+     * @param workSpace the parent workspace of the project
+     * @param id        the project's id
+     */
+    public Project(String name, Workspace workSpace, int id) {
         this.id = id;
         this.name = name;
         this.workSpace = workSpace;
+        this.columns = new ArrayList<>();
+    }
+
+    public Project(String name, Workspace workSpace) {
+        this.name = name;
+        this.workSpace = workSpace;
+        this.columns = new ArrayList<>();
+        this.id = DBManager.createProject(this);
     }
 
     public void setController(ProjectController controller) {
@@ -49,6 +67,7 @@ public class Project implements Identifiable {
 
     public void setName(String name) {
         this.name = name;
+        update();
     }
 
     public List<Column> getColumns() {
@@ -91,4 +110,13 @@ public class Project implements Identifiable {
     }
 
 
+    @Override
+    public boolean delete() {
+        return DBManager.deleteProject(this);
+    }
+
+    @Override
+    public boolean update() {
+        return DBManager.updateProject(this);
+    }
 }
