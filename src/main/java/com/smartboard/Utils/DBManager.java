@@ -2,6 +2,7 @@ package com.smartboard.Utils;
 
 import com.smartboard.exceptions.UserException;
 import com.smartboard.models.*;
+import com.smartboard.models.interfaces.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
@@ -79,6 +80,7 @@ public class DBManager {
             loginStatement.execute();
 
             createWorkspace(user.getUsername());
+            return;
 
         } catch (SQLException e) {
             if (e.getMessage().toLowerCase().contains("unique constraint failed: users.username"))
@@ -95,7 +97,7 @@ public class DBManager {
      * @return the new workspace object
      */
     public static Workspace createWorkspace(String username) {
-        Workspace workSpace = new Workspace();
+        WorkspaceImpl workSpace = new WorkspaceImpl();
         workSpace.setUsername(username);
         Project defaultProject;
         try (Connection conn = DriverManager.getConnection(url)) {
@@ -113,7 +115,7 @@ public class DBManager {
             e.printStackTrace();
         }
 
-        defaultProject = new Project("My Project", workSpace);
+        defaultProject = new ProjectImpl("My Project", workSpace);
         defaultProject.setColumns(addDefaultColumns(defaultProject));
 
         try (Connection conn = DriverManager.getConnection(url)) {
@@ -194,9 +196,9 @@ public class DBManager {
     private static List<Column> addDefaultColumns(Project project) {
 
         List<Column> defaultColumns = Arrays.asList(
-                new Column("To Do", project),
-                new Column("Doing", project),
-                new Column("Completed", project)
+                new ColumnImpl("To Do", project),
+                new ColumnImpl("Doing", project),
+                new ColumnImpl("Completed", project)
         );
         return defaultColumns;
     }
@@ -245,7 +247,7 @@ public class DBManager {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                user = new User();
+                user = new UserImpl();
                 user.setUsername(resultSet.getString("username"));
                 user.setFirstName(resultSet.getString("firstname"));
                 user.setLastName(resultSet.getString("lastname"));
@@ -263,8 +265,8 @@ public class DBManager {
      * @param user
      * @return
      */
-    public static Workspace readWorkspace(User user) {
-        Workspace workSpace = null;
+    public static WorkspaceImpl readWorkspace(User user) {
+        WorkspaceImpl workSpace = null;
         int defaultProject;
         try (Connection conn = DriverManager.getConnection(url)) {
             PreparedStatement preparedStatement = conn.prepareStatement(
@@ -272,7 +274,7 @@ public class DBManager {
             preparedStatement.setString(1, user.getUsername());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                workSpace = new Workspace();
+                workSpace = new WorkspaceImpl();
                 workSpace.setUser(user);
                 workSpace.setId(resultSet.getInt("id"));
                 workSpace.setUsername(resultSet.getString("username"));
@@ -298,7 +300,7 @@ public class DBManager {
      * @param workSpace
      * @return
      */
-    public static List<Project> readProjects(Workspace workSpace) {
+    public static List<Project> readProjects(WorkspaceImpl workSpace) {
         List<Project> projects = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url)) {
             PreparedStatement preparedStatement = conn.prepareStatement(
@@ -306,7 +308,7 @@ public class DBManager {
             preparedStatement.setInt(1, workSpace.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Project project = new Project(resultSet.getString("name"), workSpace, resultSet.getInt("id"));
+                Project project = new ProjectImpl(resultSet.getString("name"), workSpace, resultSet.getInt("id"));
                 project.setColumns(readColumns(project));
                 projects.add(project);
             }
@@ -334,7 +336,7 @@ public class DBManager {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
 
-                Column column = new Column(id, name, project);
+                Column column = new ColumnImpl(id, name, project);
                 column.setTasks(readTasks(column));
 
                 columns.add(column);
@@ -360,7 +362,7 @@ public class DBManager {
             preparedStatement.setInt(1, column.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Task task = new Task();
+                Task task = new TaskImpl();
                 task.setColumn(column);
                 task.setId(resultSet.getInt("id"));
                 task.setName(resultSet.getString("name"));
@@ -394,7 +396,7 @@ public class DBManager {
             preparedStatement.setInt(1, task.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                ListItem item = new ListItem();
+                ListItem item = new ListItemImpl();
                 item.setTask(task);
                 item.setId(resultSet.getInt("id"));
                 item.setDescription(resultSet.getString("description"));
@@ -441,7 +443,21 @@ public class DBManager {
             return false;
 
         // get class name and add 's' to match DB table names
-        String tableName = model.getClass().getSimpleName() + "s";
+        String tableName =
+                model instanceof Workspace ?
+                        "workspaces" :
+                        model instanceof Project ?
+                                "projects" :
+                                model instanceof Column ?
+                                        "columns" :
+                                        model instanceof Task ?
+                                                "tasks" :
+                                                model instanceof ListItem ?
+                                                        "listitems" :
+                                                        null;
+
+        if (tableName == null)
+            return false;
 
 
         try (Connection conn = DriverManager.getConnection(url)) {
@@ -612,7 +628,7 @@ public class DBManager {
      * @param workspace
      * @return
      */
-    public static boolean updateWorkspace(Workspace workspace) {
+    public static boolean updateWorkspace(WorkspaceImpl workspace) {
         try (Connection conn = DriverManager.getConnection(url)) {
             foreignKeysOn(conn);
             PreparedStatement preparedStatement = conn.prepareStatement(

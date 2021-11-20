@@ -3,8 +3,11 @@ package com.smartboard.models;
 import com.smartboard.Utils.DBManager;
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
+import com.smartboard.models.interfaces.Login;
+import com.smartboard.models.interfaces.User;
+import com.smartboard.models.interfaces.Workspace;
 
-public class User implements Updatable, Deletable {
+public class UserImpl implements User {
 
     private String username;
     private String firstName;
@@ -14,11 +17,11 @@ public class User implements Updatable, Deletable {
     private Workspace workSpace;
 
 
-    public User() {
-        workSpace = new Workspace();
+    public UserImpl() {
+        workSpace = new WorkspaceImpl();
     }
 
-    public User(String firstName, String lastName, String username, String password, String profilePicturePath) throws UserException {
+    public UserImpl(String firstName, String lastName, String username, String password, String profilePicturePath) throws UserException {
         String errorMessage = "";
         if (Utils.NullOrEmpty(firstName))
             errorMessage += "> First Name can not be empty\n";
@@ -36,60 +39,67 @@ public class User implements Updatable, Deletable {
         this.username = username;
         this.profilePicturePath = profilePicturePath != null && !profilePicturePath.isBlank() ?
                 profilePicturePath : this.profilePicturePath;
-        this.login = new Login(username, password, this);
-        workSpace = new Workspace();
+        this.login = new LoginImpl(username, password, this);
+        workSpace = new WorkspaceImpl();
         DBManager.createUser(this);
     }
 
-    public static User build(String username) {
-        return DBManager.readUser(username);
-    }
 
-
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
+    @Override
     public void setFirstName(String firstName) throws UserException {
         if (Utils.NullOrEmpty(firstName))
             throw new UserException("First name can not be null or empty");
         this.firstName = firstName;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
 
+    @Override
     public void setLastName(String lastName) throws UserException {
         if (Utils.NullOrEmpty(lastName))
             throw new UserException("Last name can not be null or empty");
         this.lastName = lastName;
     }
 
+    @Override
     public String getProfilePicturePath() {
         return profilePicturePath;
     }
 
+    @Override
     public void setProfilePicturePath(String profilePicturePath) {
         this.profilePicturePath = profilePicturePath;
     }
 
+    @Override
     public Login getLogin() {
         return login;
     }
 
+    @Override
     public Workspace getWorkSpace() {
         return workSpace;
     }
 
+    @Override
     public void setWorkSpace(Workspace workSpace) {
         this.workSpace = workSpace;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public void setUsername(String username) {
         this.username = username;
     }
@@ -104,6 +114,7 @@ public class User implements Updatable, Deletable {
         return DBManager.updateUser(this);
     }
 
+    @Override
     public void updateDetails(String firstname, String lastname, String profilePicPath) throws UserException {
         setFirstName(firstname);
         setLastName(lastname);

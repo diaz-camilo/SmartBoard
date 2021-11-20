@@ -2,7 +2,7 @@ package com.smartboard.controllers;
 
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
-import com.smartboard.models.User;
+import com.smartboard.models.interfaces.User;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -21,7 +21,7 @@ import java.io.*;
 public class EditProfileController {
 
     @FXML
-    public ImageView profilePic;
+    private ImageView profilePic;
     @FXML
     private TextField firstname;
     @FXML
@@ -75,8 +75,7 @@ public class EditProfileController {
                     user.getLogin().updatePassword(password.getText());
 
                 // update main app ui
-                this.mainAppController.username.setText(username.getText());
-                this.mainAppController.imgProfilePic.setImage(this.profilePic.getImage());
+                this.mainAppController.changeProfilePic(this.profilePic.getImage());
             } catch (UserException e) {
                 lblSignUpError.setText(e.getMessage());
             }

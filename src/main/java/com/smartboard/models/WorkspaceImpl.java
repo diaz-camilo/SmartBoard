@@ -2,6 +2,7 @@ package com.smartboard.models;
 
 import com.smartboard.Utils.DBManager;
 import com.smartboard.controllers.MainApplicationController;
+import com.smartboard.models.interfaces.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Workspace implements Identifiable, Deletable, Updatable {
+public class WorkspaceImpl implements Identifiable, Deletable, Updatable, Workspace {
 
     private int id;
     private List<String> quotes;
@@ -22,12 +23,8 @@ public class Workspace implements Identifiable, Deletable, Updatable {
     private MainApplicationController controller;
 
 
-    public Workspace() {
+    public WorkspaceImpl() {
         this.quotes = loadQuotes();
-    }
-
-    public static Workspace getUserWorkspace(User user) {
-        return DBManager.readWorkspace(user);
     }
 
 
@@ -43,18 +40,22 @@ public class Workspace implements Identifiable, Deletable, Updatable {
 //        populateProjectColumns(this.defaultProject);
 //    }
 
+    @Override
     public MainApplicationController getController() {
         return controller;
     }
 
+    @Override
     public void setController(MainApplicationController controller) {
         this.controller = controller;
     }
 
+    @Override
     public User getUser() {
         return user;
     }
 
+    @Override
     public void setUser(User user) {
         this.user = user;
     }
@@ -63,46 +64,50 @@ public class Workspace implements Identifiable, Deletable, Updatable {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public List<String> getQuotes() {
         return quotes;
     }
 
+    @Override
     public void setQuotes(List<String> quotes) {
         this.quotes = quotes;
     }
 
+    @Override
     public List<Project> getProjects() {
         return projects;
     }
 
+    @Override
     public void setProjects(List<Project> projects) {
         this.projects = projects;
     }
 
+    @Override
     public Project getDefaultProject() {
         return defaultProject;
     }
 
+    @Override
     public void setDefaultProject(Project defaultProject) {
         this.defaultProject = defaultProject;
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public void setUsername(String username) {
         this.username = username;
     }
-
-//    private void populateProjectColumns(Project project) {
-//        if (project != null)
-//            project.setColumns(DBManager.readProjectColumns(project));
-//    }
 
     /**
      * Attempts to load a list of quotes from file src/static/resources/txt/quotes.txt if file not found
@@ -125,11 +130,7 @@ public class Workspace implements Identifiable, Deletable, Updatable {
         );
     }
 
-    /**
-     * Selects a random quote form the preloaded list of quotes
-     *
-     * @return String array of size 2. [0] the quote, [1] The author
-     */
+    @Override
     public String[] getRandomQuote() {
         int numQuotes = this.quotes.size();
         int selected = new Random().nextInt(numQuotes);
@@ -147,6 +148,7 @@ public class Workspace implements Identifiable, Deletable, Updatable {
         return DBManager.updateWorkspace(this);
     }
 
+    @Override
     public void setDefault(Project project) {
         setDefaultProject(project);
         update();

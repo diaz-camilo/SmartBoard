@@ -2,9 +2,11 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.Utils;
-import com.smartboard.models.Project;
-import com.smartboard.models.User;
-import com.smartboard.models.Workspace;
+import com.smartboard.models.WorkspaceImpl;
+import com.smartboard.models.interfaces.Project;
+import com.smartboard.models.ProjectImpl;
+import com.smartboard.models.interfaces.User;
+import com.smartboard.models.interfaces.Workspace;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,17 +29,17 @@ public class MainApplicationController {
     public static User activeUser;
 
     @FXML
-    public TabPane tabsProjects;
+    private TabPane tabsProjects;
     @FXML
-    public MenuItem newProject;
+    private MenuItem newProject;
     @FXML
-    public ImageView imgProfilePic;
+    private ImageView imgProfilePic;
     @FXML
-    public Label username;
+    private Label username;
     @FXML
     private Text txtQuote;
 
-    private Workspace model;
+    private WorkspaceImpl model;
     private Node view;
 
     public void setView(Node view) {
@@ -97,7 +99,7 @@ public class MainApplicationController {
     @FXML
     public void initialize() throws IOException {
 
-        model = Workspace.getUserWorkspace(activeUser);
+        model = (WorkspaceImpl) Workspace.getUserWorkspace(activeUser);
         model.setController(this);
         activeUser.setWorkSpace(model);
 
@@ -176,7 +178,7 @@ public class MainApplicationController {
             return;
 
         // create model
-        Project project = new Project(projectName, this.model);
+        Project project = new ProjectImpl(projectName, this.model);
         project.setWorkSpace(this.model);
         this.model.getProjects().add(project);
 
@@ -222,5 +224,14 @@ public class MainApplicationController {
 
     public void onCloseApp(ActionEvent event) {
         Utils.getStageFromEvent(event).close();
+    }
+
+    /**
+     * changes the GUI profile picture
+     *
+     * @param image
+     */
+    public void changeProfilePic(Image image) {
+        this.imgProfilePic.setImage(image);
     }
 }

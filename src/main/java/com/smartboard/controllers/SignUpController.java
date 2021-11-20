@@ -3,12 +3,13 @@ package com.smartboard.controllers;
 import com.smartboard.Application;
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
-import com.smartboard.models.User;
+import com.smartboard.models.UserImpl;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -24,7 +25,7 @@ import java.io.*;
 
 public class SignUpController {
 
-    public ImageView profilePic;
+    private ImageView profilePic;
     @FXML
     private TextField firstname;
     @FXML
@@ -75,8 +76,13 @@ public class SignUpController {
         } else {
             // Register new user and redirect to login screen
             try {
-                new User(firstname.getText(),
+                new UserImpl(firstname.getText(),
                         lastname.getText(), username.getText(), password.getText(), profilePicPath);
+                Alert success = new Alert(Alert.AlertType.INFORMATION);
+                success.setTitle("Account Created");
+                success.setContentText("Your account was created successfully, you will be redirected to the login" +
+                        "window.");
+                success.showAndWait();
                 goToLogin(event);
             } catch (UserException e) {
                 lblSignUpError.setText(e.getMessage());

@@ -1,0 +1,17 @@
+To run the application run the main method from the application class. It will launch the applications and display the login window. At the bottom of the window, there is a link to the sign-up window. Follow that link and create a new user. The application will then show a popup window informing you that the user was created successfully and the login window will be displayed again.
+
+Log in with the user you have just created. You will be shown a template workspace and project with three columns, To do, Doing and Done and this project will be marked with an asterisk which means it is the default project. This can be changed by selecting another project as default or by going to the menu bar and selecting Project > Unset Default.
+
+The application displays a random motivational quote at the top left. At the top right you will see your profile picture (or the default profile picture), your username, an edit profile button and the logout button.
+
+When there is a default project set, the application will always display this project after login, regardless of what project was selected when closing the application. When the is not a default project set, the application will display the oldest project after login eg: the first tab.
+
+To create a new project, go to the menu bar and select Project > new Project, a pop-up window will ask for a name for the project, bear in mind empty names are not allowed. To delete a project, click the delete project button on the left. To change a project’s name, click the change name button on the left, the same naming rules apply.
+
+To add a column to the project, click the add column button and give it a name. It will be placed to the right of the rightmost column and can not be moved. At the top of every column, there is a dropdown menu what you can edit the columns name or delete it. 
+
+To add a task, click the add task button at the top of every column and give it a name, description and due date. At the top right corner of each task, there are links to edit and delete each task. Tasks are the only ones that can be dragged from column to column or within the same column to reorder them.
+
+To close the program simply close the window or select File > close from the menu bar. There is no need to save any changes as they are actively saved to the database every time there is a change in the application.
+
+WARNING: deleting a project will delete all its contents and can not be recovered. The same goes for the columns, deleting a column will delete all its tasks

@@ -2,8 +2,9 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.Utils;
-import com.smartboard.models.Column;
-import com.smartboard.models.Task;
+import com.smartboard.models.interfaces.Column;
+import com.smartboard.models.interfaces.Task;
+import com.smartboard.models.TaskImpl;
 import com.smartboard.models.TaskState;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,7 +13,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
@@ -20,14 +20,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ColumnController {
     @FXML
-    public VBox taskCardsContainer;
+    private VBox taskCardsContainer;
     @FXML
-    public MenuItem deleteColumn;
+    private MenuItem deleteColumn;
     @FXML
     private VBox columnWrapper;
     @FXML
@@ -44,6 +43,10 @@ public class ColumnController {
         return view;
     }
 
+    public VBox getTaskCardsContainer() {
+        return this.taskCardsContainer;
+    }
+
     /**
      * Add a new task to the column
      *
@@ -53,7 +56,7 @@ public class ColumnController {
     public void addTask(ActionEvent event) throws IOException {
 
         // set up new task object
-        Task task = new Task("Task Name", "Write Description Here",
+        Task task = new TaskImpl("Task Name", "Write Description Here",
                 Calendar.getInstance(), TaskState.ACTIVE, this.model, 0);
 
         // generate task node and controller

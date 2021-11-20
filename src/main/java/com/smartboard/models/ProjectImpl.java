@@ -2,16 +2,18 @@ package com.smartboard.models;
 
 import com.smartboard.Utils.DBManager;
 import com.smartboard.controllers.ProjectController;
+import com.smartboard.models.interfaces.Column;
+import com.smartboard.models.interfaces.Project;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Project implements Identifiable, Updatable, Deletable {
+public class ProjectImpl implements Project {
 
     private int id;
     private String name;
     private List<Column> columns;
-    private Workspace workSpace;
+    private WorkspaceImpl workSpace;
     private ProjectController controller;
 
 
@@ -31,78 +33,78 @@ public class Project implements Identifiable, Updatable, Deletable {
      * @param workSpace the parent workspace of the project
      * @param id        the project's id
      */
-    public Project(String name, Workspace workSpace, int id) {
+    public ProjectImpl(String name, WorkspaceImpl workSpace, int id) {
         this.id = id;
         this.name = name;
         this.workSpace = workSpace;
         this.columns = new ArrayList<>();
     }
 
-    public Project(String name, Workspace workSpace) {
+    public ProjectImpl(String name, WorkspaceImpl workSpace) {
         this.name = name;
         this.workSpace = workSpace;
         this.columns = new ArrayList<>();
         this.id = DBManager.createProject(this);
     }
 
+    @Override
     public void setController(ProjectController controller) {
         this.controller = controller;
     }
 
+    @Override
     public ProjectController getController() {
         return controller;
     }
 
+    @Override
     public int getId() {
         return id;
     }
 
+    @Override
     public void setId(int id) {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
         update();
     }
 
+    @Override
     public List<Column> getColumns() {
         return columns;
     }
 
+    @Override
     public void setColumns(List<Column> columns) {
         this.columns = columns;
     }
 
-    public Workspace getWorkSpace() {
+    @Override
+    public WorkspaceImpl getWorkSpace() {
         return workSpace;
     }
 
-    public void setWorkSpace(Workspace workSpace) {
+    @Override
+    public void setWorkSpace(WorkspaceImpl workSpace) {
         this.workSpace = workSpace;
     }
 
-    /**
-     * Adds a Column object to the List
-     *
-     * @param column The item to add
-     * @return The updated List
-     */
+    @Override
     public List<Column> addColumn(Column column) {
         this.columns.add(column);
         return this.columns;
     }
 
-    /**
-     * Removes a Column from the list
-     *
-     * @param column The item to remove
-     * @return The updated List
-     */
+    @Override
     public List<Column> removeColumn(Column column) {
         this.columns.remove(column);
         DBManager.deleteColumn(column);

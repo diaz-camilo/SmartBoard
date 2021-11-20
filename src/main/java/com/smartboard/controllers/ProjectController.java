@@ -2,8 +2,9 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.Utils;
-import com.smartboard.models.Column;
-import com.smartboard.models.Project;
+import com.smartboard.models.interfaces.Column;
+import com.smartboard.models.ColumnImpl;
+import com.smartboard.models.interfaces.Project;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,12 +18,12 @@ import java.io.IOException;
 public class ProjectController {
 
     @FXML
-    public HBox columnsContainer;
+    private HBox columnsContainer;
     @FXML
-    public Tab projectTab;
+    private Tab projectTab;
 
-    public Project model;
-    public Tab view;
+    private Project model;
+    private Tab view;
 
     /**
      * set the tab name to the model's name attribute and
@@ -83,7 +84,7 @@ public class ProjectController {
             return;
 
         // create column obj
-        Column column = new Column(columnName, this.model);
+        Column column = new ColumnImpl(columnName, this.model);
         this.model.getColumns().add(column);
 
         // generate new column

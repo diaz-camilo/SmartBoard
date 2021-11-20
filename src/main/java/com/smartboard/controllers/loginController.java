@@ -2,8 +2,8 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.Utils;
-import com.smartboard.models.Login;
-import com.smartboard.models.User;
+import com.smartboard.models.interfaces.Login;
+import com.smartboard.models.interfaces.User;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -31,15 +31,6 @@ public class loginController {
     public void close(ActionEvent event) {
         Utils.getStageFromEvent(event).close();
     }
-
-
-//    // TODO "For testing only" erase before submitting
-//    @FXML
-//    public void initialize() throws IOException {
-//        // set user and password to speed testing
-//        username.setText("camilo");
-//        password.setText("123");
-//    }
 
     /**
      * verify credentials and loads application if valid,

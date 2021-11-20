@@ -20,11 +20,11 @@ import java.util.Calendar;
 
 public class EditableTaskController {
     @FXML
-    public Text title;
+    private Text title;
     @FXML
-    public Label nameError;
+    private Label nameError;
     @FXML
-    public Label descriptionError;
+    private Label descriptionError;
     @FXML
     private DatePicker date;
     @FXML

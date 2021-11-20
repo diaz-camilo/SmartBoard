@@ -13,7 +13,6 @@ public class Application extends javafx.application.Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("SmartBoard");
         stage.setScene(scene);
-//        stage.setResizable(false);
         stage.show();
     }
 

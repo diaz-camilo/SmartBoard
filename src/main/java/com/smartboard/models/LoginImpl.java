@@ -3,15 +3,19 @@ package com.smartboard.models;
 import com.smartboard.Utils.DBManager;
 import com.smartboard.Utils.Utils;
 import com.smartboard.exceptions.UserException;
+import com.smartboard.models.interfaces.Deletable;
+import com.smartboard.models.interfaces.Login;
+import com.smartboard.models.interfaces.Updatable;
+import com.smartboard.models.interfaces.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 
-public class Login implements Updatable, Deletable {
+public class LoginImpl implements Updatable, Deletable, Login {
     private String username;
     private String passwordHash;
     private User user;
 
-    public Login(String username, String password, User user) throws UserException {
+    public LoginImpl(String username, String password, User user) throws UserException {
         validateUsername(username);
         validatePassword(password);
         if (user == null)
@@ -21,52 +25,54 @@ public class Login implements Updatable, Deletable {
         this.user = user;
     }
 
-    private String encryptPassword(String password) {
+    @Override
+    public String encryptPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    public static boolean authenticate(String username, String password) {
-        return DBManager.authenticateUser(username, password);
-    }
-
-    private void validateUsername(String username) throws UserException {
+    @Override
+    public void validateUsername(String username) throws UserException {
         if (Utils.NullOrEmpty(username))
             throw new UserException("Username can not be null or empty");
         // enforce username rules below
     }
 
-    private void validatePassword(String password) throws UserException {
+    @Override
+    public void validatePassword(String password) throws UserException {
         if (Utils.NullOrEmpty(password))
             throw new UserException("password can not be null or empty");
         // enforce password rules below
     }
 
+    @Override
     public String getUsername() {
         return username;
     }
 
+    @Override
     public void setUsername(String username) throws UserException {
         validateUsername(username);
         this.username = username;
     }
 
+    @Override
     public String getPasswordHash() {
         return passwordHash;
     }
 
+    @Override
     public void setPassword(String password) throws UserException {
         validatePassword(password);
         this.passwordHash = encryptPassword(password);
     }
 
+    @Override
     public User getUser() {
         return user;
     }
 
-    public boolean CheckPassword(String password) {
-        return BCrypt.checkpw(password, passwordHash);
-    }
 
+    @Override
     public void updatePassword(String newPassword) throws UserException {
         this.setPassword(newPassword);
         update();

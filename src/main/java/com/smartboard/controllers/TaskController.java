@@ -2,7 +2,7 @@ package com.smartboard.controllers;
 
 import com.smartboard.Application;
 import com.smartboard.Utils.Utils;
-import com.smartboard.models.Task;
+import com.smartboard.models.interfaces.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -199,7 +199,7 @@ public class TaskController {
 
         if (myController == theirController && theTaskDropped != this) {
             //reorder tasks
-            var childrenList = myController.taskCardsContainer.getChildren();
+            var childrenList = myController.getTaskCardsContainer().getChildren();
             childrenList.remove(theTaskDropped.view);
             int myPosition = childrenList.indexOf(this.view);
             // in view
