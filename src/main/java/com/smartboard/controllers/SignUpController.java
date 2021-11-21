@@ -25,6 +25,7 @@ import java.io.*;
 
 public class SignUpController {
 
+    @FXML
     private ImageView profilePic;
     @FXML
     private TextField firstname;

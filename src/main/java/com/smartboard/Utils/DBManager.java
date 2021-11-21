@@ -79,7 +79,7 @@ public class DBManager {
             userStatement.execute();
             loginStatement.execute();
 
-            createWorkspace(user.getUsername());
+            createWorkspace(user);
             return;
 
         } catch (SQLException e) {
@@ -93,26 +93,26 @@ public class DBManager {
     /**
      * creates a workspace in the database with a default project and columns
      *
-     * @param username the owner of the workspace
+     * @param user the owner of the workspace
      * @return the new workspace object
      */
-    public static Workspace createWorkspace(String username) {
-        WorkspaceImpl workSpace = new WorkspaceImpl();
-        workSpace.setUsername(username);
+    public static Workspace createWorkspace(User user) {
+        WorkspaceImpl workSpace;
         Project defaultProject;
         try (Connection conn = DriverManager.getConnection(url)) {
 
             PreparedStatement preparedStatement = conn.prepareStatement(
                     "INSERT INTO workspaces (username) values (?); ");
-            preparedStatement.setString(1, username);
+            preparedStatement.setString(1, user.getUsername());
             preparedStatement.execute();
 
             ResultSet resultSet = conn.prepareStatement(
                     "SELECT id FROM workspaces ORDER BY rowid DESC LIMIT 1;").executeQuery();
             resultSet.next();
-            workSpace.setId(resultSet.getInt(1));
+            workSpace = new WorkspaceImpl(resultSet.getInt(1), user);
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
 
         defaultProject = new ProjectImpl("My Project", workSpace);
@@ -247,11 +247,11 @@ public class DBManager {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                user = new UserImpl();
-                user.setUsername(resultSet.getString("username"));
-                user.setFirstName(resultSet.getString("firstname"));
-                user.setLastName(resultSet.getString("lastname"));
-                user.setProfilePicturePath(resultSet.getString("profile_picture_path"));
+                user = new UserImpl(
+                        resultSet.getString("firstname"),
+                        resultSet.getString("lastname"),
+                        resultSet.getString("username"),
+                        resultSet.getString("profile_picture_path"));
             }
         } catch (SQLException | UserException e) {
             e.printStackTrace();
@@ -274,13 +274,9 @@ public class DBManager {
             preparedStatement.setString(1, user.getUsername());
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                workSpace = new WorkspaceImpl();
-                workSpace.setUser(user);
-                workSpace.setId(resultSet.getInt("id"));
-                workSpace.setUsername(resultSet.getString("username"));
+                workSpace = new WorkspaceImpl(resultSet.getInt("id"), user);
                 workSpace.setProjects(readProjects(workSpace));
                 defaultProject = resultSet.getInt("default_project");
-                workSpace.setDefaultProject(null);
                 workSpace.getProjects()
                         .stream()
                         .filter(c -> c.getId() == defaultProject)
@@ -362,16 +358,17 @@ public class DBManager {
             preparedStatement.setInt(1, column.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Task task = new TaskImpl();
-                task.setColumn(column);
-                task.setId(resultSet.getInt("id"));
-                task.setName(resultSet.getString("name"));
-                task.setDescription(resultSet.getString("description"));
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(resultSet.getDate("duedate").getTime());
-                task.setDueDate(cal);
-                task.setState(TaskState.valueOf(resultSet.getString("state")));
-                task.setIndex(resultSet.getInt("index"));
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(resultSet.getDate("duedate").getTime());
+                Task task = new TaskImpl(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        calendar,
+                        TaskState.valueOf(resultSet.getString("state")),
+                        column,
+                        resultSet.getInt("index")
+                );
                 task.setListItems(readListItems(task));
 
                 tasks.add(task);

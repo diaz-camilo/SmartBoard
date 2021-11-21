@@ -21,13 +21,19 @@ import java.io.*;
 public class EditProfileController {
 
     @FXML
+    private Label usernameError;
+    @FXML
+    private Label firstnameError;
+    @FXML
+    private Label lastnameError;
+    @FXML
     private ImageView profilePic;
     @FXML
     private TextField firstname;
     @FXML
     private TextField lastname;
     @FXML
-    private Label lblPasswordError;
+    private Label passwordError;
     @FXML
     private Label lblSignUpError;
     @FXML
@@ -57,13 +63,25 @@ public class EditProfileController {
      * @throws IOException
      */
     @FXML
-    void saveChanges(Event event) throws IOException {
+    void saveChanges(Event event) {
+        hideError(firstnameError);
+        hideError(lastnameError);
+        hideError(passwordError);
+
+        boolean isValid = true;
+        if (Utils.NullOrEmpty(this.firstname.getText())) {
+            showError(firstnameError);
+            isValid = false;
+        }
+        if (Utils.NullOrEmpty(this.lastname.getText())) {
+            showError(lastnameError);
+            isValid = false;
+        }
         if (!password.getText().equals(passwordConfirm.getText())) {
-            lblPasswordError.setText("Password does not match");
-            lblPasswordError.setPrefHeight(Label.USE_COMPUTED_SIZE);
-            lblPasswordError.setMinHeight(Label.USE_COMPUTED_SIZE);
-            lblPasswordError.setVisible(true);
-        } else {
+            showError(passwordError);
+            isValid = false;
+        }
+        if (isValid) {
             try {
                 // get active user
                 User user = MainApplicationController.activeUser;
@@ -76,11 +94,23 @@ public class EditProfileController {
 
                 // update main app ui
                 this.mainAppController.changeProfilePic(this.profilePic.getImage());
+                close(event);
             } catch (UserException e) {
                 lblSignUpError.setText(e.getMessage());
             }
-            close(event);
         }
+    }
+
+    private void showError(Label label) {
+        label.setPrefHeight(Label.USE_COMPUTED_SIZE);
+        label.setMinHeight(Label.USE_COMPUTED_SIZE);
+        label.setVisible(true);
+    }
+
+    private void hideError(Label label) {
+        label.setPrefHeight(0);
+        label.setMinHeight(0);
+        label.setVisible(false);
     }
 
     @FXML

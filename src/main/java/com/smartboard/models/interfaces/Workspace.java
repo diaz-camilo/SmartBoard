@@ -23,12 +23,6 @@ public interface Workspace extends Identifiable, Updatable, Deletable {
 
     void setUser(User user);
 
-    void setId(int id);
-
-    List<String> getQuotes();
-
-    void setQuotes(List<String> quotes);
-
     List<Project> getProjects();
 
     void setProjects(List<Project> projects);
@@ -40,7 +34,6 @@ public interface Workspace extends Identifiable, Updatable, Deletable {
     String getUsername();
 
     void setUsername(String username);
-
 
     /**
      * Selects a random quote form the preloaded list of quotes

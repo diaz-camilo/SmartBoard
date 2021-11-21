@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ColumnImpl implements Column {
 
-    private int id;
+    private final int id;
     private String name;
     private List<Task> tasks;
     private Project project;
@@ -26,9 +26,7 @@ public class ColumnImpl implements Column {
      * @param project the parent project
      */
     public ColumnImpl(int id, String name, Project project) {
-        this.name = name;
-        this.project = project;
-        this.tasks = new ArrayList<>();
+        init(name, project);
         this.id = id;
     }
 
@@ -39,10 +37,20 @@ public class ColumnImpl implements Column {
      * @param project the parent project
      */
     public ColumnImpl(String name, Project project) {
+        init(name, project);
+        this.id = DBManager.createColumn(this);
+    }
+
+    /**
+     * helper constructor method to avoid repetition
+     *
+     * @param name    the column name
+     * @param project the parent project
+     */
+    private void init(String name, Project project) {
         this.name = name;
         this.project = project;
         this.tasks = new ArrayList<>();
-        this.id = DBManager.createColumn(this);
     }
 
     @Override
@@ -55,6 +63,11 @@ public class ColumnImpl implements Column {
         return name;
     }
 
+    /**
+     * this set method triggers a DB update
+     *
+     * @param name the new name
+     */
     @Override
     public void setName(String name) {
         this.name = name;
@@ -67,7 +80,6 @@ public class ColumnImpl implements Column {
         return tasks;
     }
 
-
     @Override
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
@@ -78,9 +90,15 @@ public class ColumnImpl implements Column {
         return project;
     }
 
+    /**
+     * this set method triggers a DB update
+     *
+     * @param project the parent project
+     */
     @Override
     public void setProject(Project project) {
         this.project = project;
+        update();
     }
 
     @Override
@@ -116,7 +134,7 @@ public class ColumnImpl implements Column {
 
     @Override
     public boolean delete() {
-        return false;
+        return DBManager.deleteColumn(this);
     }
 
     @Override

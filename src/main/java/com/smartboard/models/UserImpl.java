@@ -16,12 +16,52 @@ public class UserImpl implements User {
     private Login login;
     private Workspace workSpace;
 
-
-    public UserImpl() {
-        workSpace = new WorkspaceImpl();
+    /**
+     * constructor used by the DB to reconstruct workspace from database
+     *
+     * @param firstName          user's first name
+     * @param lastName           user's last name
+     * @param username           username
+     * @param profilePicturePath the absolute path to the profile picture
+     * @throws UserException
+     */
+    public UserImpl(String firstName, String lastName, String username, String profilePicturePath) throws UserException {
+        init(firstName, lastName, username, profilePicturePath);
     }
 
+    /**
+     * @param firstName          user's first name
+     * @param lastName           user's last name
+     * @param username           username
+     * @param profilePicturePath the absolute path to the profile picture
+     * @param password           the password in plain text
+     * @throws UserException
+     */
     public UserImpl(String firstName, String lastName, String username, String password, String profilePicturePath) throws UserException {
+        String errorMessage = "";
+        try {
+            init(firstName, lastName, username, profilePicturePath);
+        } catch (UserException e) {
+            errorMessage = e.getMessage() + "\n";
+        }
+        if (Utils.NullOrEmpty(password))
+            errorMessage += "> Password can not be empty\n";
+        if (!errorMessage.isBlank())
+            throw new UserException(errorMessage.substring(0, errorMessage.length() - 1));
+        this.login = new LoginImpl(username, password, this);
+        DBManager.createUser(this);
+    }
+
+    /**
+     * helper method to the constructor to avoid repetition
+     *
+     * @param firstName          user's first name
+     * @param lastName           user's last name
+     * @param username           username
+     * @param profilePicturePath the absolute path to the profile picture
+     * @throws UserException if any of the arguments is empty or null
+     */
+    private void init(String firstName, String lastName, String username, String profilePicturePath) throws UserException {
         String errorMessage = "";
         if (Utils.NullOrEmpty(firstName))
             errorMessage += "> First Name can not be empty\n";
@@ -29,8 +69,6 @@ public class UserImpl implements User {
             errorMessage += "> Last Name can not be empty\n";
         if (Utils.NullOrEmpty(username))
             errorMessage += "> Username can not be empty\n";
-        if (Utils.NullOrEmpty(password))
-            errorMessage += "> Password can not be empty\n";
         if (!errorMessage.isBlank())
             throw new UserException(errorMessage.substring(0, errorMessage.length() - 1));
 
@@ -39,9 +77,6 @@ public class UserImpl implements User {
         this.username = username;
         this.profilePicturePath = profilePicturePath != null && !profilePicturePath.isBlank() ?
                 profilePicturePath : this.profilePicturePath;
-        this.login = new LoginImpl(username, password, this);
-        workSpace = new WorkspaceImpl();
-        DBManager.createUser(this);
     }
 
 

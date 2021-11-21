@@ -7,6 +7,7 @@ import com.smartboard.models.interfaces.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -14,31 +15,21 @@ import java.util.stream.Collectors;
 
 public class WorkspaceImpl implements Identifiable, Deletable, Updatable, Workspace {
 
-    private int id;
-    private List<String> quotes;
+    private final int id;
+    private final List<String> quotes;
     private List<Project> projects;
     private Project defaultProject;
     private String username;
     private User user;
     private MainApplicationController controller;
 
-
-    public WorkspaceImpl() {
+    public WorkspaceImpl(int id, User user) {
+        this.id = id;
+        this.user = user;
+        this.projects = new ArrayList<>();
+        this.username = user.getUsername();
         this.quotes = loadQuotes();
     }
-
-
-//    public Workspace(User user) {
-//        this.username = user.getUsername();
-//        this.quotes = loadQuotes();
-//        this.id = DBManager.readWorkspaceId(user.getUsername());
-//        this.projects = DBManager.readUserProjects(this);
-//        List<Project> tempProjects = this.projects.parallelStream()
-//                .filter(x -> x.getId() == DBManager.readDefaultProject(user.getUsername()))
-//                .collect(Collectors.toList());
-//        this.defaultProject = tempProjects.size() == 0 ? null : tempProjects.get(0);
-//        populateProjectColumns(this.defaultProject);
-//    }
 
     @Override
     public MainApplicationController getController() {
@@ -62,21 +53,6 @@ public class WorkspaceImpl implements Identifiable, Deletable, Updatable, Worksp
 
     public int getId() {
         return id;
-    }
-
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    @Override
-    public List<String> getQuotes() {
-        return quotes;
-    }
-
-    @Override
-    public void setQuotes(List<String> quotes) {
-        this.quotes = quotes;
     }
 
     @Override
@@ -140,7 +116,7 @@ public class WorkspaceImpl implements Identifiable, Deletable, Updatable, Worksp
 
     @Override
     public boolean delete() {
-        return false;
+        return DBManager.deleteWorkspace(this);
     }
 
     @Override

@@ -10,8 +10,6 @@ public interface Project extends Identifiable, Updatable, Deletable {
 
     ProjectController getController();
 
-    void setId(int id);
-
     String getName();
 
     void setName(String name);
